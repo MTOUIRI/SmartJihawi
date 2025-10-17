@@ -1,0 +1,676 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import ExamPlatformStructure from './Exam/ExamPlatformStructure';
+import ExamList from './Content/ExamList';
+import ChapterViewer from './Content/Chapters/ChapterViewer';
+import YearSelector from './Content/YearSelector';
+import { QCMViewer, QCMChapterList } from './Content/QCM/QCMViewer';
+import { ExamComponentWrapper, initializeExamRegistry } from './Exam/examRegistry';
+import ProductionEcriteCards from './Content/Essay/ProductionEcriteCards';
+import RegistrationModal from './Registration/RegistrationModal';
+import { 
+  books, 
+  getAllBooks, 
+  getBookById, 
+  initializeExamData
+} from './Content/ExamData';
+import { 
+  BookOpen, 
+  FileText, 
+  Users, 
+  ChevronRight, 
+  ArrowLeft, 
+  HelpCircle, 
+  AlertCircle, 
+  Loader2, 
+  PenTool, 
+  Lock, 
+  LogIn, 
+  UserPlus,
+  Target,
+  Award,
+  Clock,
+  CheckCircle
+} from 'lucide-react';
+
+const VIEWS = {
+  BOOKS: 'books',
+  BOOK_CONTENT: 'book-content',
+  CHAPTERS: 'chapters',
+  QCM_CHAPTERS: 'qcm-chapters',
+  QCM_VIEWER: 'qcm-viewer',
+  ESSAY_PRACTICE: 'essay-practice',
+  YEARS: 'years',
+  EXAMS: 'exams',
+  EXAM: 'exam'
+};
+
+const CONTENT_TYPES = {
+  CHAPTERS: {
+    id: 'chapters',
+    title: 'Chapitres & Résumés',
+    description: 'Explorez les chapitres détaillés et les résumés complets du livre',
+    icon: Users,
+    color: 'from-blue-500 to-blue-600',
+    action: 'Explorer'
+  },
+  QCM: {
+    id: 'qcm',
+    title: 'QCM par Chapitre',
+    description: 'Testez vos connaissances avec des quiz interactifs organisés par chapitre',
+    icon: HelpCircle,
+    color: 'from-purple-500 to-purple-600',
+    action: 'Commencer'
+  },
+  ESSAY: {
+    id: 'essay',
+    title: 'Production Écrite',
+    description: 'Pratiquez l\'introduction, le développement et la conclusion séparément',
+    icon: PenTool,
+    color: 'from-pink-500 to-rose-600',
+    action: 'S\'entraîner'
+  },
+  EXAMS: {
+    id: 'exams',
+    title: 'Examens Officiels',
+    description: 'Entraînez-vous avec les examens officiels des années précédentes',
+    icon: FileText,
+    color: 'from-emerald-500 to-emerald-600',
+    action: 'Accéder'
+  }
+};
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Platform Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center gap-3 text-red-600 mb-4">
+              <AlertCircle className="w-6 h-6" />
+              <h2 className="text-xl font-bold">Une erreur est survenue</h2>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Nous nous excusons pour la gêne occasionnée. Veuillez actualiser la page.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Actualiser la page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+const LoadingSpinner = ({ message = 'Chargement...' }) => (
+  <div className="flex flex-col items-center justify-center py-12">
+    <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
+    <p className="text-gray-600 font-medium">{message}</p>
+  </div>
+);
+
+const ErrorAlert = ({ message, onRetry }) => (
+  <div className="max-w-2xl mx-auto mb-6">
+    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div className="flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div className="flex-1">
+          <h3 className="text-red-800 font-semibold mb-1">Erreur de chargement</h3>
+          <p className="text-red-700 text-sm">{message}</p>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="mt-3 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-800 rounded-md text-sm font-medium transition-colors"
+            >
+              Réessayer
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const ContentCard = ({ type, examCount, onClick }) => {
+  const config = CONTENT_TYPES[type.toUpperCase()];
+  
+  if (!config) {
+    console.error(`Invalid content type: ${type}`);
+    return null;
+  }
+  
+  const Icon = config.icon;
+
+  return (
+    <button
+      onClick={onClick}
+      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-300 overflow-hidden group text-left w-full"
+    >
+      <div className={`h-2 bg-gradient-to-r ${config.color}`} />
+      
+      <div className="p-6">
+        <div className={`w-16 h-16 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md`}>
+          <Icon className="w-8 h-8 text-white" />
+        </div>
+        
+        <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+          {config.title}
+        </h3>
+        
+        <p className="text-gray-600 text-sm mb-4 leading-relaxed min-h-[40px]">
+          {config.description}
+        </p>
+        
+        <div className="flex items-center justify-between">
+          {type === 'exams' && examCount !== undefined && (
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+              examCount > 0 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-gray-100 text-gray-600'
+            }`}>
+              {examCount} examen{examCount !== 1 ? 's' : ''}
+            </span>
+          )}
+          
+          <div className="flex items-center gap-2 text-blue-600 font-semibold ml-auto">
+            <span className="text-sm">{config.action}</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+};
+
+const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
+  const [currentBook, setCurrentBook] = useState('dernier-jour');
+  const [currentView, setCurrentView] = useState(VIEWS.BOOKS);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedExam, setSelectedExam] = useState(null);
+  const [selectedChapter, setSelectedChapter] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showAnswers, setShowAnswers] = useState(false);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [booksData, setBooksData] = useState(books);
+  const [initialized, setInitialized] = useState(false);
+  
+  // Registration modal state
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+
+  const initializePlatform = useCallback(async () => {
+    if (initialized) return;
+
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await Promise.all([
+        initializeExamData(),
+        initializeExamRegistry()
+      ]);
+      
+      setBooksData({ ...books });
+      setInitialized(true);
+    } catch (err) {
+      console.error('Platform initialization error:', err);
+      setError('Échec de l\'initialisation de la plateforme. Veuillez réessayer.');
+    } finally {
+      setLoading(false);
+    }
+  }, [initialized]);
+
+  useEffect(() => {
+    initializePlatform();
+  }, [initializePlatform]);
+
+  const resetNavigationState = useCallback(() => {
+    setCurrentSlide(0);
+    setUserAnswers({});
+    setShowAnswers(false);
+    setError(null);
+  }, []);
+
+  const handleBookChange = useCallback((bookKey) => {
+    setCurrentBook(bookKey);
+    setCurrentView(VIEWS.BOOK_CONTENT);
+    setSelectedExam(null);
+    setSelectedYear(null);
+    setSelectedChapter(null);
+    resetNavigationState();
+  }, [resetNavigationState]);
+
+  const handleYearSelect = useCallback((year) => {
+    setSelectedYear(year);
+    setCurrentView(VIEWS.EXAMS);
+    resetNavigationState();
+  }, [resetNavigationState]);
+
+  const handleExamSelect = useCallback((exam) => {
+    setSelectedExam(exam);
+    setCurrentView(VIEWS.EXAM);
+    resetNavigationState();
+  }, [resetNavigationState]);
+
+  const handleChapterSelect = useCallback((chapter) => {
+    setSelectedChapter(chapter);
+    setCurrentView(VIEWS.QCM_VIEWER);
+  }, []);
+
+  const handleAnswerChange = useCallback((questionId, value) => {
+    setUserAnswers(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
+  }, []);
+
+  const navigateToView = useCallback((view, resetSelections = {}) => {
+    setCurrentView(view);
+    if (resetSelections.exam !== undefined) setSelectedExam(resetSelections.exam);
+    if (resetSelections.year !== undefined) setSelectedYear(resetSelections.year);
+    if (resetSelections.chapter !== undefined) setSelectedChapter(resetSelections.chapter);
+    resetNavigationState();
+  }, [resetNavigationState]);
+
+  const handleBackToBooks = useCallback(() => {
+    navigateToView(VIEWS.BOOKS, { exam: null, year: null, chapter: null });
+  }, [navigateToView]);
+
+  const handleBackToBookContent = useCallback(() => {
+    navigateToView(VIEWS.BOOK_CONTENT, { exam: null, year: null, chapter: null });
+  }, [navigateToView]);
+
+  const handleBackToYears = useCallback(() => {
+    navigateToView(VIEWS.YEARS, { exam: null });
+  }, [navigateToView]);
+
+  const handleBackToExams = useCallback(() => {
+    navigateToView(VIEWS.EXAMS, { exam: null });
+  }, [navigateToView]);
+
+  const handleBackToQCMChapters = useCallback(() => {
+    navigateToView(VIEWS.QCM_CHAPTERS, { chapter: null });
+  }, [navigateToView]);
+
+  const handleHeaderClick = useCallback(() => {
+    setCurrentBook('dernier-jour');
+    navigateToView(VIEWS.BOOKS, { exam: null, year: null, chapter: null });
+  }, [navigateToView]);
+
+  const handleShowExams = useCallback(() => setCurrentView(VIEWS.YEARS), []);
+  const handleShowChapters = useCallback(() => setCurrentView(VIEWS.CHAPTERS), []);
+  const handleShowQCM = useCallback(() => setCurrentView(VIEWS.QCM_CHAPTERS), []);
+  const handleShowEssay = useCallback(() => setCurrentView(VIEWS.ESSAY_PRACTICE), []);
+
+  // Registration handlers
+  const handleShowRegistration = useCallback(() => {
+    setShowRegistrationModal(true);
+  }, []);
+
+  const handleCloseRegistration = useCallback(() => {
+    setShowRegistrationModal(false);
+  }, []);
+
+  const handleRegister = useCallback((formData) => {
+    console.log('Registration data:', formData);
+    alert('Inscription réussie ! Votre compte sera activé après vérification du paiement.');
+    setShowRegistrationModal(false);
+  }, []);
+
+  const currentBookData = useMemo(() => getBookById(currentBook), [currentBook]);
+
+  const renderExamComponent = () => {
+    if (!selectedExam || !currentBookData) return null;
+
+    return (
+      <ExamComponentWrapper
+        examId={selectedExam.id}
+        examData={selectedExam}
+        book={currentBookData}
+        currentSlide={currentSlide}
+        onSlideChange={setCurrentSlide}
+        showAnswers={showAnswers}
+        userAnswers={userAnswers}
+        onAnswerChange={handleAnswerChange}
+        onBack={handleBackToExams}
+      />
+    );
+  };
+
+  const renderBookContentSelection = () => {
+    if (!currentBookData) return null;
+
+    const examCount = currentBookData.examCount || 0;
+
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="flex-1 p-6 md:p-8">
+          <div className="max-w-6xl mx-auto">
+            <header className="mb-8">
+              <button
+                onClick={handleBackToBooks}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-6 font-medium"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Retour à la bibliothèque
+              </button>
+              
+              <div className="text-center">
+                <div className={`w-20 h-20 bg-gradient-to-br ${currentBookData.color} rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-xl`}>
+                  <BookOpen className="w-10 h-10 text-white" />
+                </div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                  {currentBookData.title}
+                </h1>
+                <p className="text-xl text-gray-600">par {currentBookData.author}</p>
+              </div>
+            </header>
+
+            {loading && <LoadingSpinner message="Chargement des contenus..." />}
+            {error && <ErrorAlert message={error} onRetry={initializePlatform} />}
+
+            {!loading && !error && (
+              <>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                  <ContentCard
+                    type="chapters"
+                    onClick={handleShowChapters}
+                  />
+                  <ContentCard
+                    type="qcm"
+                    onClick={handleShowQCM}
+                  />
+                  <ContentCard
+                    type="essay"
+                    onClick={handleShowEssay}
+                  />
+                  <ContentCard
+                    type="exams"
+                    examCount={examCount}
+                    onClick={handleShowExams}
+                  />
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl p-6 border border-blue-100 shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-blue-900 mb-2 text-lg">
+                        Plateforme d'apprentissage interactive
+                      </h3>
+                      <p className="text-blue-800 text-sm leading-relaxed">
+                        Accédez à des ressources pédagogiques complètes : résumés détaillés, 
+                        quiz interactifs, pratique d'expression écrite et examens officiels. 
+                        {!user && (
+                          <span className="font-semibold"> Inscrivez-vous maintenant pour un accès complet à 200 DH pour toute l'année.</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderBooksLibrary = () => {
+    const allBooks = getAllBooks();
+
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="flex-1 p-6 md:p-8">
+          <div className="max-w-6xl mx-auto">
+            <header className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">
+                Choisissez un livre pour commencer
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Une solution complète pour votre préparation aux examens : 
+                chapitres détaillés, QCM interactifs, pratique d'expression écrite et examens officiels
+              </p>
+            </header>
+
+            {loading && <LoadingSpinner message="Chargement de la bibliothèque..." />}
+            {error && <ErrorAlert message={error} onRetry={initializePlatform} />}
+
+            {!loading && !error && (
+              <>
+                {/* Books Grid */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-16">
+                  {allBooks.map((book) => {
+                    // Book cover images - replace these URLs with your actual book cover images
+                    const bookCovers = {
+                      'boite-merveilles': '/Images/boite.png',
+                      'antigone': '/Images/antigone.png',
+                      'dernier-jour': '/Images/dernier-jour.jpg'
+                    };
+
+                    return (
+                      <button
+                        key={book.id}
+                        onClick={() => handleBookChange(book.id)}
+                        className="relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group border border-gray-200 hover:border-gray-300 text-left overflow-hidden h-96"
+                      >
+                        {/* Book Cover Image - Full Card */}
+                        <div className="absolute inset-0">
+                          <img 
+                            src={bookCovers[book.id]} 
+                            alt={`Couverture de ${book.title}`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          {/* Gradient Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                        </div>
+
+                        {/* Card Content - Overlaid on Image */}
+                        <div className="relative h-full flex flex-col justify-end p-6 z-10">
+                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors drop-shadow-lg">
+                            {book.title}
+                          </h3>
+                          
+                          <p className="text-white/90 mb-4 text-sm drop-shadow-md">par {book.author}</p>
+                          
+                          <div className="flex items-center justify-end">
+                            <div className="flex items-center gap-2 text-white font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg group-hover:from-emerald-600 group-hover:to-teal-700 transition-all">
+                              <span className="text-sm">Explorer</span>
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* CTA Section - Only show for non-authenticated users */}
+                {!user && (
+                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 md:p-12 shadow-2xl mb-16">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                      <div className="flex-1 text-white">
+                        <h3 className="text-3xl font-bold mb-3">
+                          Prêt à commencer votre préparation ?
+                        </h3>
+                        <p className="text-blue-100 text-lg mb-4">
+                          Rejoignez des centaines d'étudiants qui réussissent leurs examens avec SmartJihawi
+                        </p>
+                        <div className="flex items-center gap-3 text-blue-100">
+                          <CheckCircle className="w-5 h-5" />
+                          <span>Accès complet pour seulement 200 DH/an</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-blue-100 mt-2">
+                          <CheckCircle className="w-5 h-5" />
+                          <span>Tous les livres et ressources inclus</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-3 flex-shrink-0">
+                        <button
+                          onClick={handleShowRegistration}
+                          className="px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-xl hover:shadow-2xl flex items-center gap-2 text-lg"
+                        >
+                          <UserPlus className="w-5 h-5" />
+                          S'inscrire maintenant
+                        </button>
+                        <button
+                          onClick={onShowStudentLogin}
+                          className="px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm border-2 border-white/30"
+                        >
+                          Déjà inscrit ? Se connecter
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer */}
+                <footer className="pt-8 border-t border-gray-200">
+                  <div className="text-center text-gray-600">
+                    <p className="text-sm mb-2">
+                      © 2025 SmartJihawi. Tous droits réservés.
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Plateforme d'apprentissage pour la littérature française • 1ère Bac
+                    </p>
+                  </div>
+                </footer>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderContent = () => {
+    switch (currentView) {
+      case VIEWS.BOOK_CONTENT:
+        return renderBookContentSelection();
+      
+      case VIEWS.CHAPTERS:
+        return (
+          <ChapterViewer
+            book={currentBookData}
+            onBack={handleBackToBookContent}
+            user={user}
+            onShowLogin={onShowStudentLogin}
+          />
+        );
+      
+      case VIEWS.QCM_CHAPTERS:
+        return (
+          <QCMChapterList
+            book={currentBookData}
+            onChapterSelect={handleChapterSelect}
+            onBack={handleBackToBookContent}
+            user={user}
+            onShowLogin={onShowStudentLogin}
+          />
+        );
+      
+      case VIEWS.QCM_VIEWER:
+        return selectedChapter ? (
+          <QCMViewer
+            book={currentBookData}
+            chapter={selectedChapter}
+            onBack={handleBackToQCMChapters}
+            user={user}
+            onShowLogin={onShowStudentLogin}
+          />
+        ) : null;
+      
+      case VIEWS.ESSAY_PRACTICE:
+        return (
+          <ProductionEcriteCards
+            book={currentBookData}
+            onBack={handleBackToBookContent}
+            showArabic={false}
+            user={user}
+            onShowLogin={onShowStudentLogin}
+          />
+        );
+      
+      case VIEWS.YEARS:
+        return (
+          <YearSelector
+            book={currentBookData}
+            onYearSelect={handleYearSelect}
+            onBack={handleBackToBookContent}
+            loading={loading}
+            error={error}
+          />
+        );
+      
+      case VIEWS.EXAMS:
+        return (
+          <ExamList
+            book={currentBookData}
+            year={selectedYear}
+            onExamSelect={handleExamSelect}
+            onBack={handleBackToYears}
+            loading={loading}
+            error={error}
+            user={user}
+            onShowLogin={onShowStudentLogin}
+          />
+        );
+      
+      case VIEWS.EXAM:
+        return renderExamComponent();
+      
+      case VIEWS.BOOKS:
+      default:
+        return renderBooksLibrary();
+    }
+  };
+
+  return (
+    <ErrorBoundary>
+      <ExamPlatformStructure
+        currentBook={currentBook}
+        books={booksData}
+        onBookChange={handleBookChange}
+        onHeaderClick={handleHeaderClick}
+        showAnswers={showAnswers}
+        onToggleAnswers={() => setShowAnswers(!showAnswers)}
+        user={user}
+        onLogout={onLogout}
+        onShowStudentLogin={onShowStudentLogin}
+      >
+        {renderContent()}
+      </ExamPlatformStructure>
+
+      {/* Registration Modal */}
+      <RegistrationModal
+        isOpen={showRegistrationModal}
+        onClose={handleCloseRegistration}
+        onRegister={handleRegister}
+      />
+    </ErrorBoundary>
+  );
+};
+
+export default ExamPlatform;
