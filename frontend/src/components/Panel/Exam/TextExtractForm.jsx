@@ -80,8 +80,11 @@ const TextExtractForm = ({ formData, setFormData }) => {
           id: selectedChapter.id,
           chapterNumber: selectedChapter.chapterNumber,
           title: selectedChapter.title,
+          chapterTitle: selectedChapter.title,  // Add this for compatibility
+          chapterTitleArabic: selectedChapter.titleArabic || null,  // Add Arabic title if exists
           videoUrl: selectedChapter.videoUrl,
           duration: selectedChapter.duration,
+          bookId: formData.bookId,  // Add bookId
           timeStart: '',
           timeEnd: ''
         } : null
@@ -288,7 +291,9 @@ const TextExtractForm = ({ formData, setFormData }) => {
           <div className="flex items-start gap-3 mb-4">
             <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-medium text-green-800 mb-2">Chapitre {selectedChapter.chapterNumber}: {selectedChapter.title}</h4>
+              <h4 className="font-medium text-green-800 mb-2">
+                Chapitre {selectedChapter.chapterNumber}: {selectedChapter.title || selectedChapter.chapterTitle}
+              </h4>
               <p className="text-sm text-green-700">Durée totale: {selectedChapter.duration}</p>
             </div>
           </div>
@@ -299,7 +304,7 @@ const TextExtractForm = ({ formData, setFormData }) => {
               <iframe
                 className="w-full h-full"
                 src={`https://www.youtube.com/embed/${getYouTubeVideoId(selectedChapter.videoUrl)}`}
-                title={selectedChapter.title}
+                title={selectedChapter.title || selectedChapter.chapterTitle}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
