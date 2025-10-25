@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, Book, Calendar, FileText, Save, X, ChevronDown, Ale
 import TextExtractForm from './Exam/TextExtractForm';
 import BasicInfoForm from './Exam/BasicInfoForm';
 import StepIndicator from './Exam/StepIndicator';
+import API_URL from '../../config';
 
 const ExamManagement = () => {
   const [books] = useState([
@@ -43,7 +44,7 @@ const ExamManagement = () => {
 
   const apiCall = async (endpoint, options = {}) => {
     const token = getAuthToken();
-    const baseURL = 'http://localhost:8080/api';
+    const baseURL = API_URL;
     
     const config = {
       headers: {

@@ -24,11 +24,9 @@ public class TextExtract {
     @Column(length = 5000, nullable = false)
     private String content;
     
-    // Optional chapter reference - stored as JSON or separate fields
     @Column(name = "source_chapter_id")
-    private Long sourceChapterId; // Reference to Chapter entity
+    private Long sourceChapterId;
     
-    // Alternative: store chapter info directly if not referencing Chapter entity
     @Column(name = "chapter_number")
     private Integer chapterNumber;
     
@@ -42,12 +40,15 @@ public class TextExtract {
     private String videoUrl;
     
     @Column(name = "time_start")
-    private String timeStart; // Format: "MM:SS"
+    private String timeStart;
     
     @Column(name = "time_end")
-    private String timeEnd; // Format: "MM:SS"
+    private String timeEnd;
     
-    // Optional relationship to Chapter entity if you want to reference existing chapters
+    // CRITICAL: Add this field
+    @Column(name = "book_id")
+    private String bookId;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_ref_id")
     private Chapter chapterRef;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Book, Play, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import API_URL from '../../../config';
 
 const TextExtractForm = ({ formData, setFormData }) => {
   const [chapters, setChapters] = useState([]);
@@ -12,7 +13,7 @@ const TextExtractForm = ({ formData, setFormData }) => {
 
   const apiCall = async (endpoint, options = {}) => {
     const token = getAuthToken();
-    const baseURL = 'http://localhost:8080/api';
+    const baseURL = API_URL;
     
     const config = {
       headers: {
@@ -70,27 +71,26 @@ const TextExtractForm = ({ formData, setFormData }) => {
   }, [formData.bookId]);
 
   const handleChapterSelect = (chapterId) => {
-    const selectedChapter = chapters.find(ch => ch.id === chapterId);
-    
-    setFormData({
-      ...formData,
-      textExtract: {
-        ...formData.textExtract,
-        sourceChapter: selectedChapter ? {
-          id: selectedChapter.id,
-          chapterNumber: selectedChapter.chapterNumber,
-          title: selectedChapter.title,
-          chapterTitle: selectedChapter.title,  // Add this for compatibility
-          chapterTitleArabic: selectedChapter.titleArabic || null,  // Add Arabic title if exists
-          videoUrl: selectedChapter.videoUrl,
-          duration: selectedChapter.duration,
-          bookId: formData.bookId,  // Add bookId
-          timeStart: '',
-          timeEnd: ''
-        } : null
-      }
-    });
-  };
+  const selectedChapter = chapters.find(ch => ch.id === chapterId);
+  
+  setFormData({
+    ...formData,
+    textExtract: {
+      ...formData.textExtract,
+      sourceChapter: selectedChapter ? {
+        id: selectedChapter.id,                    // Backend will use this to fetch chapter
+        chapterNumber: selectedChapter.chapterNumber,
+        chapterTitle: selectedChapter.title,       // Changed from 'title' to 'chapterTitle'
+        chapterTitleArabic: selectedChapter.titleArabic || null,
+        videoUrl: selectedChapter.videoUrl,
+        duration: selectedChapter.duration,
+        bookId: formData.bookId,                   // Add bookId
+        timeStart: '',
+        timeEnd: ''
+      } : null
+    }
+  });
+};
 
   const handleTimestampChange = (field, value) => {
     if (formData.textExtract.sourceChapter) {

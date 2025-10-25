@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { PenTool, ArrowLeft, BookOpen, Lightbulb, FileText, CheckCircle, Loader2, AlertCircle, ChevronRight, Lock, Sparkles, UserPlus, LogIn } from 'lucide-react';
 import EssayViewer from './EssayViewer';
 import { isItemLocked } from '../FreemiumWrapper';
+import API_URL from '../../../config';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = API_URL;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');

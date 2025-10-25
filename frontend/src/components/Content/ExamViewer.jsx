@@ -620,7 +620,7 @@ const totalSlides = sortedQuestions.length + 2 + (shouldShowCompleteEssay ? 1 : 
                   <span className="text-blue-600 font-bold text-sm">{currentSlide - 1}</span>
                 </div>
                 <span className="text-sm text-gray-500">
-                  {question.points} {showArabic ? (question.points > 1 ? 'نقط' : 'نقطة') : (question.points > 1 ? 'points' : 'point')}
+                  {question.points} {showArabic ? (question.points > 0 ? 'نقط' : 'نقطة') : (question.points > 0 ? 'points' : 'point')}
                 </span>
               </div>
             </div>

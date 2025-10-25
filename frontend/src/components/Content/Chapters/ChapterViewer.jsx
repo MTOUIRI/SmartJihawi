@@ -2,10 +2,11 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Play, BookOpen, Clock, ChevronLeft, ChevronRight, Menu, X, AlertCircle, Loader2, CheckCircle, Lock } from 'lucide-react';
 import FreemiumWrapper, { isItemLocked } from '../FreemiumWrapper';
 import RegistrationModal from '../../Registration/RegistrationModal';
+import API_URL from '../../../config';
 
 // API Configuration
 const API_CONFIG = {
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080/api',
+  baseURL: process.env.REACT_APP_API_URL || API_URL,
   timeout: 10000
 };
 

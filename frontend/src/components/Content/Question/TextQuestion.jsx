@@ -1,5 +1,5 @@
 import React from 'react';
-import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { HelpCircle, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
 
 const WordPlacementQuestion = ({ 
   question, 
@@ -11,12 +11,10 @@ const WordPlacementQuestion = ({
   const [availableWords, setAvailableWords] = React.useState([]);
   const [placedWords, setPlacedWords] = React.useState({});
 
-  // Initialize states properly with useEffect to handle prop changes
   React.useEffect(() => {
     const allWords = question.dragDropWords?.words || [];
     const currentPlacedWords = userAnswers[question.id] || {};
     
-    // Calculate which words are still available
     const usedWords = Object.values(currentPlacedWords);
     const remainingWords = allWords.filter(word => !usedWords.includes(word));
     
@@ -24,7 +22,6 @@ const WordPlacementQuestion = ({
     setPlacedWords(currentPlacedWords);
   }, [question.id, userAnswers, question.dragDropWords?.words]);
 
-  // Create the template with blanks
   const templateParts = (question.dragDropWords?.template || question.answer || '').split(/\[(\d+)\]/);
   
   const handleDragStart = (e, word, wordIndex) => {
@@ -50,21 +47,15 @@ const WordPlacementQuestion = ({
     const newAvailableWords = [...availableWords];
 
     if (draggedWord.source === 'available') {
-      // Moving from available words to slot
       if (placedWords[slotIndex]) {
-        // If slot already has a word, return it to available words
         newAvailableWords.push(placedWords[slotIndex]);
       }
-      // Remove word from available and place in slot
       newAvailableWords.splice(draggedWord.wordIndex, 1);
       newPlacedWords[slotIndex] = draggedWord.word;
     } else if (draggedWord.source === 'placed') {
-      // Moving from one slot to another
       if (placedWords[slotIndex]) {
-        // Swap words if target slot is occupied
         newPlacedWords[draggedWord.slotIndex] = placedWords[slotIndex];
       } else {
-        // Clear the source slot
         delete newPlacedWords[draggedWord.slotIndex];
       }
       newPlacedWords[slotIndex] = draggedWord.word;
@@ -73,8 +64,6 @@ const WordPlacementQuestion = ({
     setAvailableWords(newAvailableWords);
     setPlacedWords(newPlacedWords);
     setDraggedWord(null);
-
-    // Update parent component
     onAnswerChange(question.id, newPlacedWords);
   };
 
@@ -85,19 +74,16 @@ const WordPlacementQuestion = ({
     const newPlacedWords = { ...placedWords };
     const newAvailableWords = [...availableWords];
 
-    // Return word to available words
     newAvailableWords.push(draggedWord.word);
     delete newPlacedWords[draggedWord.slotIndex];
 
     setAvailableWords(newAvailableWords);
     setPlacedWords(newPlacedWords);
     setDraggedWord(null);
-
     onAnswerChange(question.id, newPlacedWords);
   };
 
   const handleDoubleClick = (word, wordIndex) => {
-    // Find first empty slot
     const emptySlot = templateParts.findIndex((part, index) => 
       index % 2 === 1 && !placedWords[parseInt(part)]
     );
@@ -130,13 +116,10 @@ const WordPlacementQuestion = ({
     }
   };
 
-  // Calculate total words count for progress
   const totalWords = question.dragDropWords?.words?.length || 0;
 
   return (
     <div className="space-y-6">
-
-      {/* Available words */}
       <div className="space-y-3">
         <h4 className={`font-medium text-gray-700 ${showArabic ? 'text-right' : 'text-left'}`}>
           {showArabic ? 'الكلمات المتاحة:' : 'Mots disponibles :'}
@@ -167,15 +150,12 @@ const WordPlacementQuestion = ({
         </div>
       </div>
 
-      {/* Text with drop zones */}
       <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
         <div className={`text-lg leading-relaxed ${showArabic ? 'text-right' : 'text-left'}`}>
           {templateParts.map((part, index) => {
             if (index % 2 === 0) {
-              // Regular text
               return <span key={index}>{part}</span>;
             } else {
-              // Drop slot
               const slotIndex = parseInt(part);
               const placedWord = placedWords[slotIndex];
               
@@ -200,9 +180,7 @@ const WordPlacementQuestion = ({
                       {placedWord}
                     </span>
                   ) : (
-                    <span className="select-none text-center block">
-                      ___
-                    </span>
+                    <span className="select-none text-center block">___</span>
                   )}
                 </span>
               );
@@ -211,9 +189,6 @@ const WordPlacementQuestion = ({
         </div>
       </div>
 
-      
-
-      {/* Progress indicator */}
       <div className="flex items-center justify-between text-sm text-gray-600">
         <span>
           {showArabic ? 'التقدم:' : 'Progression :'} {Object.keys(placedWords).length} / {totalWords}
@@ -273,6 +248,65 @@ const VocabularyHelper = ({ question, showArabic, showAnswers, showHelper, toggl
   );
 };
 
+const SubQuestionItem = ({ subQuestion, showArabic, showAnswers, questionId, userAnswer, onAnswerChange }) => {
+  const currentAnswer = userAnswer?.[subQuestion.id] || '';
+  
+  return (
+    <div className="border-l-4 border-purple-500 bg-purple-50 rounded-lg p-4 space-y-3">
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
+          {subQuestion.label}
+        </div>
+        <div className="flex-1">
+          <div className={`font-medium text-gray-800 mb-2 ${showArabic ? 'text-right' : 'text-left'}`}>
+            <p className="mb-1">
+              {showArabic && subQuestion.questionArabic ? subQuestion.questionArabic : subQuestion.question}
+            </p>
+            {showArabic && subQuestion.questionArabic && (
+              <p className="text-sm text-gray-500 border-t pt-1 text-left">
+                {subQuestion.question}
+              </p>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+            <span>{subQuestion.points} {showArabic ? (subQuestion.points > 1 ? 'نقط' : 'نقطة') : (subQuestion.points > 1 ? 'points' : 'point')}</span>
+          </div>
+
+          {showAnswers[questionId] ? (
+            <div className={`p-4 bg-green-50 border-l-4 border-green-500 rounded ${showArabic ? 'border-r-4 border-l-0 text-right' : ''}`}>
+              <p className="text-green-800 font-medium mb-2">
+                {showArabic ? 'الإجابة المقترحة:' : 'Réponse suggérée :'}
+              </p>
+              <p className="text-green-700 whitespace-pre-line">
+                {showArabic && subQuestion.answerArabic ? subQuestion.answerArabic : subQuestion.answer}
+              </p>
+              {showArabic && subQuestion.answerArabic && (
+                <p className="text-green-600 text-sm mt-3 pt-3 border-t border-green-200 text-left whitespace-pre-line">
+                  {subQuestion.answer}
+                </p>
+              )}
+            </div>
+          ) : (
+            <textarea
+              className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none ${showArabic ? 'text-right' : 'text-left'}`}
+              rows={3}
+              placeholder={showArabic ? "اكتب إجابتك هنا..." : "Écrivez votre réponse ici..."}
+              value={currentAnswer}
+              onChange={(e) => {
+                const newAnswer = {...(userAnswer || {})};
+                newAnswer[subQuestion.id] = e.target.value;
+                onAnswerChange(questionId, newAnswer);
+              }}
+              dir={showArabic ? 'rtl' : 'ltr'}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const TextQuestion = ({ 
   question, 
   showArabic, 
@@ -282,7 +316,7 @@ const TextQuestion = ({
   showHelper,
   toggleHelper
 }) => {
-  // Check if this is a word placement question (has dragDropWords property)
+  // Check if this is a word placement question
   if (question.dragDropWords && !showAnswers[question.id]) {
     return (
       <div>
@@ -303,6 +337,90 @@ const TextQuestion = ({
     );
   }
 
+  // Check if this question has sub-questions
+  const hasSubQuestions = question.subQuestions && question.subQuestions.length > 0;
+
+  // Calculate completion status for sub-questions
+  const getCompletionStatus = () => {
+    if (!hasSubQuestions) {
+      const answer = userAnswers[question.id];
+      return typeof answer === 'string' && answer.trim().length > 0;
+    }
+    
+    const userAnswer = userAnswers[question.id] || {};
+    const completedCount = question.subQuestions.filter(subQ => {
+      const answer = userAnswer[subQ.id];
+      return answer && answer.trim().length > 0;
+    }).length;
+    
+    return {
+      completed: completedCount,
+      total: question.subQuestions.length,
+      isComplete: completedCount === question.subQuestions.length
+    };
+  };
+
+  const completionStatus = getCompletionStatus();
+
+  // Render sub-questions if they exist
+  if (hasSubQuestions) {
+    return (
+      <div className="space-y-4">
+        {/* Progress indicator */}
+        {!showAnswers[question.id] && typeof completionStatus === 'object' && (
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className={`text-sm font-medium ${showArabic ? 'text-right' : 'text-left'}`}>
+                {showArabic ? 'تقدم الإجابة:' : 'Progression des réponses :'}
+              </span>
+              <span className="text-sm font-bold text-purple-700">
+                {completionStatus.completed} / {completionStatus.total}
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(completionStatus.completed / completionStatus.total) * 100}%` }}
+              />
+            </div>
+            {completionStatus.isComplete && (
+              <div className="flex items-center gap-2 mt-2 text-green-600">
+                <CheckCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  {showArabic ? 'اكتملت جميع الإجابات!' : 'Toutes les réponses sont complètes!'}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Sub-questions */}
+        <div className="space-y-4">
+          {question.subQuestions.map((subQ) => (
+            <SubQuestionItem
+              key={subQ.id}
+              subQuestion={subQ}
+              showArabic={showArabic}
+              showAnswers={showAnswers}
+              questionId={question.id}
+              userAnswer={userAnswers[question.id]}
+              onAnswerChange={onAnswerChange}
+            />
+          ))}
+        </div>
+
+        <VocabularyHelper
+          question={question}
+          showArabic={showArabic}
+          showAnswers={showAnswers}
+          showHelper={showHelper}
+          toggleHelper={toggleHelper}
+        />
+      </div>
+    );
+  }
+
+  // Regular text question (no sub-questions)
   return (
     <div>
       {showAnswers[question.id] ? (

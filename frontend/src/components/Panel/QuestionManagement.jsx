@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { useApi } from './Question/UseApi';
 import { questionTypes, books } from './Question/QuestionTypes';
 import QuestionForm from './Question/QuestionForm';
 import QuestionList from './Question/QuestionList';
 import DeleteConfirmModal from './Question/DeleteConfirmModal';
+import API_URL from '../../config';
 
 const QuestionManagement = () => {
-  const { apiCall } = useApi();
   const [selectedExam, setSelectedExam] = useState(null);
   const [exams, setExams] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -39,6 +38,42 @@ const QuestionManagement = () => {
     answer: '',
     answerArabic: ''
   });
+
+  // API Call function integrated directly (same as ExamManagement)
+  const getAuthToken = () => {
+    return localStorage.getItem('admin_token');
+  };
+
+  const apiCall = async (endpoint, options = {}) => {
+    const token = getAuthToken();
+    const baseURL = API_URL;
+    
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
+      ...options
+    };
+
+    try {
+      const response = await fetch(`${baseURL}${endpoint}`, config);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      if (response.status === 204 || response.headers.get('content-length') === '0') {
+        return {};
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  };
 
   const handleJsonImport = () => {
     setJsonError('');
@@ -74,7 +109,6 @@ const QuestionManagement = () => {
         answerArabic: parsed.answerArabic || ''
       };
 
-      // Determine question mode for multiple_choice_single
       if (parsed.type === 'multiple_choice_single' && parsed.subQuestions && parsed.subQuestions.length > 0) {
         setQuestionMode('grouped');
       } else {
@@ -95,11 +129,13 @@ const QuestionManagement = () => {
   const loadExams = async (bookId) => {
     if (!bookId) return;
     setLoading(true);
+    setError('');
     try {
       const data = await apiCall(`/exams/book/${bookId}`);
       setExams(data);
     } catch (err) {
       setError(`Erreur lors du chargement: ${err.message}`);
+      setExams([]);
     } finally {
       setLoading(false);
     }
@@ -108,11 +144,13 @@ const QuestionManagement = () => {
   const loadQuestions = async (examId) => {
     if (!examId) return;
     setLoading(true);
+    setError('');
     try {
       const data = await apiCall(`/questions/exam/${examId}`);
       setQuestions(data.questions || []);
     } catch (err) {
       setError(`Erreur lors du chargement: ${err.message}`);
+      setQuestions([]);
     } finally {
       setLoading(false);
     }
@@ -129,6 +167,8 @@ const QuestionManagement = () => {
         examId: selectedExam.id
       };
 
+      console.log('Submitting question:', questionData);
+
       if (editingQuestion) {
         await apiCall(`/questions/${editingQuestion.id}`, {
           method: 'PUT',
@@ -144,6 +184,7 @@ const QuestionManagement = () => {
       resetForm();
       await loadQuestions(selectedExam.id);
     } catch (err) {
+      console.error('Submit error:', err);
       setError(`Erreur: ${err.message}`);
     } finally {
       setLoading(false);
@@ -159,15 +200,16 @@ const QuestionManagement = () => {
     if (!questionToDelete) return;
     
     setLoading(true);
+    setError('');
     try {
       await apiCall(`/questions/${questionToDelete}`, { method: 'DELETE' });
       await loadQuestions(selectedExam.id);
+      setShowDeleteConfirm(false);
+      setQuestionToDelete(null);
     } catch (err) {
       setError(`Erreur lors de la suppression: ${err.message}`);
     } finally {
       setLoading(false);
-      setShowDeleteConfirm(false);
-      setQuestionToDelete(null);
     }
   };
 

@@ -4,6 +4,7 @@ import BookExamSelector from './Essay/BookExamSelector';
 import QuestionsList from './Essay/QuestionsList';
 import QuestionFormModal from './Essay/QuestionFormModal';
 import DeleteConfirmModal from './Essay/DeleteConfirmModal';
+import API_URL from '../../config';
 
 const EssayManagement = () => {
   // State Management
@@ -54,7 +55,7 @@ const EssayManagement = () => {
   // API Helper
   const apiCall = async (endpoint, options = {}) => {
     const token = localStorage.getItem('admin_token');
-    const baseURL = 'http://localhost:8080/api';
+    const baseURL = API_URL;
     
     const config = {
       headers: {

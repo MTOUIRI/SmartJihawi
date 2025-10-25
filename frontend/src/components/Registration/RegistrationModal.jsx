@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, Phone, School, ArrowRight, ArrowLeft, CheckCircle, Send, AlertCircle } from 'lucide-react';
+import API_URL from '../../config';
 
 const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
   const [step, setStep] = useState(1);
@@ -92,7 +93,7 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
     setErrors({});
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

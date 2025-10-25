@@ -10,7 +10,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SourceChapterRequest {
     
-    private Long chapterId; // Reference to existing chapter
+    // IMPORTANT: Accept both field names
+    private Long id;
+    private Long chapterId;
     
     private Integer chapterNumber;
     
@@ -24,8 +26,16 @@ public class SourceChapterRequest {
     private String videoUrl;
     
     @Size(max = 10, message = "Le temps de début ne peut pas dépasser 10 caractères")
-    private String timeStart; // Format: "MM:SS"
+    private String timeStart;
     
     @Size(max = 10, message = "Le temps de fin ne peut pas dépasser 10 caractères")
-    private String timeEnd; // Format: "MM:SS"
+    private String timeEnd;
+    
+    @Size(max = 100, message = "Le bookId ne peut pas dépasser 100 caractères")
+    private String bookId;
+    
+    // CRITICAL: This helper method gets the ID from either field
+    public Long getEffectiveChapterId() {
+        return id != null ? id : chapterId;
+    }
 }

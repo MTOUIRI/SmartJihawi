@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, HelpCircle, Book, X, Save, AlertTriangle, Upload } from 'lucide-react';
+import API_URL from '../../config';
 
 const QCMManagement = () => {
   const [books] = useState([
@@ -39,7 +40,7 @@ const QCMManagement = () => {
 
   const apiCall = async (endpoint, options = {}) => {
     const token = localStorage.getItem('admin_token');
-    const baseURL = 'http://localhost:8080/api';
+    const baseURL = API_URL;
     
     const config = {
       headers: {

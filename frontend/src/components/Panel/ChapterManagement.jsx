@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Book, Clock, Link, Save, X, ChevronDown, AlertTriangle } from 'lucide-react';
+import API_URL from '../../config';
 
 const ChapterManagement = () => {
   const [books] = useState([
@@ -34,7 +35,7 @@ const ChapterManagement = () => {
   // Fixed API call function - now makes real HTTP requests
   const apiCall = async (endpoint, options = {}) => {
     const token = getAuthToken();
-    const baseURL = 'http://localhost:8080/api'; // Adjust this to your backend URL
+    const baseURL = API_URL; // Adjust this to your backend URL
     
     const config = {
       headers: {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, XCircle, Award, RefreshCw, HelpCircle, Globe, BookOpen, Lock, LogIn, UserPlus } from 'lucide-react';
 import { isItemLocked, LockedCard } from '../FreemiumWrapper';
+import API_URL from '../../../config';
 
 // QCM Viewer Component
 const QCMViewer = ({ book, chapter, onBack, user, onShowLogin, onShowRegistration, chapterIndex = 0 }) => {
@@ -36,7 +37,7 @@ const QCMViewer = ({ book, chapter, onBack, user, onShowLogin, onShowRegistratio
         headers['Authorization'] = `Bearer ${token}`;
       }
       
-      const response = await fetch(`http://localhost:8080/api/qcm/chapter/${chapter.id}`, {
+      const response = await fetch(`/api/qcm/chapter/${chapter.id}`, {
         headers
       });
       
@@ -530,7 +531,7 @@ const QCMChapterList = ({ book, onChapterSelect, onBack, user, onShowLogin, onSh
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`http://localhost:8080/api/chapters/book/${book.id}`);
+      const response = await fetch(`${API_URL}/chapters/book/${book.id}`);
       
       if (!response.ok) throw new Error('Erreur lors du chargement des chapitres');
       
@@ -539,7 +540,7 @@ const QCMChapterList = ({ book, onChapterSelect, onBack, user, onShowLogin, onSh
       const chaptersWithQCM = await Promise.all(
         data.map(async (chapter) => {
           try {
-            const qcmResponse = await fetch(`http://localhost:8080/api/qcm/chapter/${chapter.id}/count`);
+            const qcmResponse = await fetch(`/api/qcm/chapter/${chapter.id}/count`);
             const qcmData = await qcmResponse.json();
             return { ...chapter, qcmCount: qcmData.count || 0 };
           } catch {

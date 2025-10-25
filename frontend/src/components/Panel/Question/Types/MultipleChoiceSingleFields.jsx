@@ -53,6 +53,25 @@ const MultipleChoiceSingleFields = ({ question, onChange, questionMode, onModeCh
     onChange({...question, subQuestions: newSubQuestions});
   };
 
+  // Toggle multiple answer selection
+  const toggleMultipleAnswer = (optionId) => {
+    const currentAnswers = question.answer ? question.answer.split(' et ') : [];
+    let newAnswers;
+    
+    if (currentAnswers.includes(optionId)) {
+      newAnswers = currentAnswers.filter(id => id !== optionId);
+    } else {
+      newAnswers = [...currentAnswers, optionId].sort();
+    }
+    
+    onChange({...question, answer: newAnswers.join(' et ')});
+  };
+
+  const isAnswerSelected = (optionId) => {
+    if (!question.answer) return false;
+    return question.answer.split(' et ').includes(optionId);
+  };
+
   return (
     <div className="space-y-4">
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -130,19 +149,29 @@ const MultipleChoiceSingleFields = ({ question, onChange, questionMode, onModeCh
           
           {(question.options || []).length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Réponse correcte</label>
-              <select
-                value={question.answer || ''}
-                onChange={(e) => onChange({...question, answer: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Choisir la bonne réponse</option>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Réponse(s) correcte(s) - Cochez une ou plusieurs options
+              </label>
+              <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
                 {question.options.map((option, index) => (
-                  <option key={index} value={option.id}>
-                    {option.id}) {option.text}
-                  </option>
+                  <label key={index} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isAnswerSelected(option.id)}
+                      onChange={() => toggleMultipleAnswer(option.id)}
+                      className="w-4 h-4 text-blue-600 rounded"
+                    />
+                    <span className="text-sm">
+                      {option.id}) {option.text}
+                    </span>
+                  </label>
                 ))}
-              </select>
+              </div>
+              {question.answer && (
+                <p className="mt-2 text-sm text-gray-600">
+                  Réponse sélectionnée: <span className="font-medium">{question.answer}</span>
+                </p>
+              )}
             </div>
           )}
         </>
