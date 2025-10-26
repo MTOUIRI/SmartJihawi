@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User, Phone, School, ArrowRight, ArrowLeft, CheckCircle, Send, AlertCircle } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, MapPin, ArrowRight, ArrowLeft, CheckCircle, Send, AlertCircle } from 'lucide-react';
 import API_URL from '../../config';
 
 const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
@@ -10,8 +10,7 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
     password: '',
     confirmPassword: '',
     phone: '',
-    school: '',
-    level: 'jihawi-2026'
+    city: ''
   });
   const [errors, setErrors] = useState({});
   const [agreed, setAgreed] = useState(false);
@@ -24,6 +23,10 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
     
     if (!formData.fullName.trim()) {
       newErrors.fullName = 'Le nom complet est requis';
+    } else if (/^\d/.test(formData.fullName.trim())) {
+      newErrors.fullName = 'Le nom ne peut pas commencer par un chiffre';
+    } else if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(formData.fullName.trim())) {
+      newErrors.fullName = 'Le nom ne peut contenir que des lettres';
     }
     
     if (!formData.email.trim()) {
@@ -55,8 +58,12 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
       newErrors.phone = 'Numéro de téléphone marocain invalide';
     }
     
-    if (!formData.school.trim()) {
-      newErrors.school = 'L\'établissement est requis';
+    if (!formData.city.trim()) {
+      newErrors.city = 'La ville est requise';
+    } else if (/^\d/.test(formData.city.trim())) {
+      newErrors.city = 'La ville ne peut pas commencer par un chiffre';
+    } else if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(formData.city.trim())) {
+      newErrors.city = 'La ville ne peut contenir que des lettres';
     }
     
     setErrors(newErrors);
@@ -123,7 +130,8 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
       `Bonjour, je viens de m'inscrire à l'offre Jihawi 2026.\n\n` +
       `Nom: ${formData.fullName}\n` +
       `Email: ${formData.email}\n` +
-      `Téléphone: ${formData.phone}\n\n` +
+      `Téléphone: ${formData.phone}\n` +
+      `Ville: ${formData.city}\n\n` +
       `Je vous envoie mon reçu de paiement.`
     );
     const whatsappNumber = '212690002573';
@@ -269,44 +277,27 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
 
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
-          Établissement scolaire *
+          Ville *
         </label>
         <div className="relative">
-          <School className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
-            name="school"
-            value={formData.school}
+            name="city"
+            value={formData.city}
             onChange={handleInputChange}
             className={`w-full pl-11 pr-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.school ? 'border-red-500' : 'border-gray-200'
+              errors.city ? 'border-red-500' : 'border-gray-200'
             }`}
-            placeholder="Nom de votre lycée"
+            placeholder="Votre ville"
           />
         </div>
-        {errors.school && (
+        {errors.city && (
           <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
-            {errors.school}
+            {errors.city}
           </p>
         )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
-          Niveau
-        </label>
-        <div className="relative">
-          <select
-            name="level"
-            value={formData.level}
-            onChange={handleInputChange}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
-          >
-            <option value="jihawi-2026">Jihawi 2026 (1ère Bac)</option>
-            <option value="jihawi-2027">Jihawi 2027 (2ème Bac)</option>
-          </select>
-        </div>
       </div>
     </div>
   );
@@ -347,15 +338,9 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
             <span className="text-gray-600">Téléphone :</span>
             <span className="font-semibold text-gray-900">{formData.phone}</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">École :</span>
-            <span className="font-semibold text-gray-900">{formData.school}</span>
-          </div>
           <div className="flex justify-between py-2">
-            <span className="text-gray-600">Niveau :</span>
-            <span className="font-semibold text-gray-900">
-              {formData.level === 'jihawi-2026' ? 'Jihawi 2026 (1ère Bac)' : 'Jihawi 2027 (2ème Bac)'}
-            </span>
+            <span className="text-gray-600">Ville :</span>
+            <span className="font-semibold text-gray-900">{formData.city}</span>
           </div>
         </div>
       </div>
@@ -440,17 +425,31 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
         </h3>
         
         <p className="text-gray-600 text-sm mb-4">
-          Cliquez sur le bouton ci-dessous pour nous envoyer votre reçu de paiement via WhatsApp. 
+          Envoyez-nous votre reçu de paiement via WhatsApp. 
           Votre compte sera activé dans les 24 heures suivant la vérification.
         </p>
         
         <button
           onClick={sendWhatsAppReceipt}
-          className="w-full px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+          className="w-full px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-3 shadow-lg hover:shadow-xl mb-3"
         >
           <Send className="w-5 h-5" />
           Envoyer le reçu sur WhatsApp
         </button>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+          <p className="text-xs text-gray-600 text-center mb-1">
+            Ou contactez-nous directement :
+          </p>
+          <p className="text-center">
+            <a 
+              href="tel:+212690002573" 
+              className="text-green-600 hover:text-green-700 font-bold text-lg"
+            >
+              +212 690 002 573
+            </a>
+          </p>
+        </div>
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -548,4 +547,4 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
   );
 };
 
-export default RegistrationModal
+export default RegistrationModal;
