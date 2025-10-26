@@ -9,6 +9,7 @@ public class RegisterRequest {
     
     @NotBlank(message = "Le nom complet est requis")
     @Size(min = 2, max = 100, message = "Le nom doit contenir entre 2 et 100 caractères")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\s'-]+$", message = "Le nom ne peut contenir que des lettres")
     private String fullName;
     
     @NotBlank(message = "L'email est requis")
@@ -26,11 +27,9 @@ public class RegisterRequest {
     @Pattern(regexp = "^(0|\\+212)[5-7]\\d{8}$", message = "Numéro de téléphone marocain invalide")
     private String phone;
     
-    @NotBlank(message = "L'établissement scolaire est requis")
-    private String school;
-    
-    @NotBlank(message = "Le niveau est requis")
-    private String level;
+    @NotBlank(message = "La ville est requise")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\s'-]+$", message = "La ville ne peut contenir que des lettres")
+    private String city;
     
     // Constructors
     public RegisterRequest() {}
@@ -51,9 +50,6 @@ public class RegisterRequest {
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
     
-    public String getSchool() { return school; }
-    public void setSchool(String school) { this.school = school; }
-    
-    public String getLevel() { return level; }
-    public void setLevel(String level) { this.level = level; }
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
 }

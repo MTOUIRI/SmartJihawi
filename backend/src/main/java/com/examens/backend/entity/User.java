@@ -22,11 +22,8 @@ public class User {
     @Column(name = "phone")
     private String phone;
     
-    @Column(name = "school")
-    private String school;
-    
-    @Column(name = "level")
-    private String level;
+    @Column(name = "city")
+    private String city;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -71,11 +68,8 @@ public class User {
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
     
-    public String getSchool() { return school; }
-    public void setSchool(String school) { this.school = school; }
-    
-    public String getLevel() { return level; }
-    public void setLevel(String level) { this.level = level; }
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
     
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }

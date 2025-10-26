@@ -144,7 +144,7 @@ public class AuthService {
     }
     
     /**
-     * Student registration
+     * Student registration - UPDATED to use city instead of school/level
      */
     public LoginResponse registerStudent(RegisterRequest registerRequest) throws Exception {
         // Validate passwords match
@@ -163,8 +163,8 @@ public class AuthService {
         student.setEmail(registerRequest.getEmail());
         student.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         student.setPhone(registerRequest.getPhone());
-        student.setSchool(registerRequest.getSchool());
-        student.setLevel(registerRequest.getLevel());
+        student.setCity(registerRequest.getCity()); // Changed from setSchool
+        // Removed setLevel - no longer needed
         student.setRole(User.Role.STUDENT);
         student.setIsPaid(false); // Not paid initially
         
