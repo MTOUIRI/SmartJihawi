@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, HelpCircle, Book, X, Save, AlertTriangle, Upload } from 'lucide-react';
-import API_URL from '../../config';
+
+const API_URL = 'https://api.example.com'; // Remplacer par votre API_URL
 
 const QCMManagement = () => {
   const [books] = useState([
@@ -22,6 +23,7 @@ const QCMManagement = () => {
   const [showJsonImport, setShowJsonImport] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
   const [jsonError, setJsonError] = useState('');
+  const [importProgress, setImportProgress] = useState({ current: 0, total: 0 });
   
   const [formData, setFormData] = useState({
     chapterId: '',
@@ -94,58 +96,118 @@ const QCMManagement = () => {
     }
   };
 
-  const handleJsonImport = () => {
+  const handleJsonImport = async () => {
     setJsonError('');
     try {
       const parsed = JSON.parse(jsonInput);
       
-      if (!parsed.question || !parsed.options || !parsed.correctAnswer) {
-        setJsonError('Le JSON doit contenir au minimum "question", "options" et "correctAnswer"');
+      // Détecter si c'est un tableau de questions ou une seule question
+      const questionsArray = Array.isArray(parsed) ? parsed : [parsed];
+      
+      // Valider toutes les questions
+      for (let i = 0; i < questionsArray.length; i++) {
+        const q = questionsArray[i];
+        
+        if (!q.question || !q.options || !q.correctAnswer) {
+          setJsonError(`Question ${i + 1}: Le JSON doit contenir "question", "options" et "correctAnswer"`);
+          return;
+        }
+
+        if (!Array.isArray(q.options) || q.options.length !== 4) {
+          setJsonError(`Question ${i + 1}: Le tableau "options" doit contenir exactement 4 éléments`);
+          return;
+        }
+
+        const validOptionIds = ['a', 'b', 'c', 'd'];
+        const hasValidIds = q.options.every((opt) => 
+          opt.id && validOptionIds.includes(opt.id.toLowerCase())
+        );
+
+        if (!hasValidIds) {
+          setJsonError(`Question ${i + 1}: Chaque option doit avoir un "id" valide (a, b, c, ou d)`);
+          return;
+        }
+
+        if (!validOptionIds.includes(q.correctAnswer.toLowerCase())) {
+          setJsonError(`Question ${i + 1}: La "correctAnswer" doit être a, b, c, ou d`);
+          return;
+        }
+      }
+
+      // Si c'est une seule question, remplir le formulaire
+      if (questionsArray.length === 1) {
+        const importedData = {
+          chapterId: formData.chapterId,
+          question: questionsArray[0].question || '',
+          questionArabic: questionsArray[0].questionArabic || '',
+          options: questionsArray[0].options.map(opt => ({
+            id: opt.id.toLowerCase(),
+            text: opt.text || '',
+            textArabic: opt.textArabic || ''
+          })),
+          correctAnswer: questionsArray[0].correctAnswer.toLowerCase(),
+          explanation: questionsArray[0].explanation || '',
+          explanationArabic: questionsArray[0].explanationArabic || ''
+        };
+
+        setFormData(importedData);
+        setShowJsonImport(false);
+        setJsonInput('');
+        setError('✅ JSON importé avec succès!');
+        setTimeout(() => setError(''), 3000);
         return;
       }
 
-      if (!Array.isArray(parsed.options) || parsed.options.length !== 4) {
-        setJsonError('Le tableau "options" doit contenir exactement 4 éléments');
-        return;
+      // Si c'est plusieurs questions, les importer en masse
+      setLoading(true);
+      setImportProgress({ current: 0, total: questionsArray.length });
+      
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (let i = 0; i < questionsArray.length; i++) {
+        try {
+          const q = questionsArray[i];
+          const requestData = {
+            chapterId: selectedChapter.id,
+            question: q.question,
+            questionArabic: q.questionArabic || '',
+            options: q.options.map(opt => ({
+              id: opt.id.toLowerCase(),
+              text: opt.text,
+              textArabic: opt.textArabic || ''
+            })),
+            correctAnswer: q.correctAnswer.toLowerCase(),
+            explanation: q.explanation || '',
+            explanationArabic: q.explanationArabic || ''
+          };
+
+          await apiCall('/qcm', {
+            method: 'POST',
+            body: JSON.stringify(requestData)
+          });
+          
+          successCount++;
+          setImportProgress({ current: i + 1, total: questionsArray.length });
+        } catch (err) {
+          errorCount++;
+          console.error(`Erreur question ${i + 1}:`, err);
+        }
       }
 
-      const validOptionIds = ['a', 'b', 'c', 'd'];
-      const hasValidIds = parsed.options.every((opt) => 
-        opt.id && validOptionIds.includes(opt.id.toLowerCase())
-      );
-
-      if (!hasValidIds) {
-        setJsonError('Chaque option doit avoir un "id" valide (a, b, c, ou d)');
-        return;
-      }
-
-      if (!validOptionIds.includes(parsed.correctAnswer.toLowerCase())) {
-        setJsonError('La "correctAnswer" doit être a, b, c, ou d');
-        return;
-      }
-
-      const importedData = {
-        chapterId: formData.chapterId,
-        question: parsed.question || '',
-        questionArabic: parsed.questionArabic || '',
-        options: parsed.options.map(opt => ({
-          id: opt.id.toLowerCase(),
-          text: opt.text || '',
-          textArabic: opt.textArabic || ''
-        })),
-        correctAnswer: parsed.correctAnswer.toLowerCase(),
-        explanation: parsed.explanation || '',
-        explanationArabic: parsed.explanationArabic || ''
-      };
-
-      setFormData(importedData);
+      setLoading(false);
       setShowJsonImport(false);
       setJsonInput('');
-      setError('✅ JSON importé avec succès!');
+      setImportProgress({ current: 0, total: 0 });
       
-      setTimeout(() => setError(''), 3000);
+      setError(`✅ Import terminé: ${successCount} questions ajoutées${errorCount > 0 ? `, ${errorCount} erreurs` : ''}`);
+      setTimeout(() => setError(''), 5000);
+      
+      await loadQuestions(selectedChapter.id);
     } catch (err) {
       setJsonError(`Erreur de parsing JSON: ${err.message}`);
+      setLoading(false);
+      setImportProgress({ current: 0, total: 0 });
     }
   };
 
@@ -310,13 +372,23 @@ const QCMManagement = () => {
 
         {selectedChapter && (
           <>
-            <div className="mb-6">
+            <div className="mb-6 flex gap-3">
               <button
                 onClick={() => setShowForm(true)}
                 className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
               >
                 <Plus className="w-5 h-5" />
-                Ajouter une question QCM
+                Ajouter une question
+              </button>
+              <button
+                onClick={() => {
+                  setShowJsonImport(true);
+                  setShowForm(false);
+                }}
+                className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+              >
+                <Upload className="w-5 h-5" />
+                Import JSON en masse
               </button>
             </div>
 
@@ -330,7 +402,7 @@ const QCMManagement = () => {
                 </p>
               </div>
 
-              {loading && (
+              {loading && importProgress.total === 0 && (
                 <div className="p-8 text-center">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
                   <p className="mt-2 text-gray-600">Chargement...</p>
@@ -413,6 +485,132 @@ const QCMManagement = () => {
               )}
             </div>
 
+            {/* JSON Import Modal */}
+            {showJsonImport && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] overflow-y-auto">
+                  <div className="p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                          <Upload className="w-6 h-6 text-indigo-600" />
+                          Import JSON en masse
+                        </h2>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Importez une seule question ou un tableau de questions
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowJsonImport(false);
+                          setJsonInput('');
+                          setJsonError('');
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
+                      <h3 className="font-semibold text-indigo-900 mb-2">💡 Format accepté</h3>
+                      <div className="space-y-2 text-sm text-indigo-800">
+                        <p><strong>Une seule question:</strong></p>
+                        <pre className="bg-white p-2 rounded text-xs overflow-x-auto">
+{`{
+  "question": "Votre question...",
+  "questionArabic": "سؤالك...",
+  "options": [
+    {"id": "a", "text": "Option A", "textArabic": "الخيار أ"},
+    {"id": "b", "text": "Option B", "textArabic": "الخيار ب"},
+    {"id": "c", "text": "Option C", "textArabic": "الخيار ج"},
+    {"id": "d", "text": "Option D", "textArabic": "الخيار د"}
+  ],
+  "correctAnswer": "a"
+}`}
+                        </pre>
+                        <p className="mt-3"><strong>Plusieurs questions (tableau):</strong></p>
+                        <pre className="bg-white p-2 rounded text-xs overflow-x-auto">
+{`[
+  {
+    "question": "Question 1...",
+    "options": [...],
+    "correctAnswer": "a"
+  },
+  {
+    "question": "Question 2...",
+    "options": [...],
+    "correctAnswer": "b"
+  }
+]`}
+                        </pre>
+                      </div>
+                    </div>
+
+                    <textarea
+                      value={jsonInput}
+                      onChange={(e) => setJsonInput(e.target.value)}
+                      placeholder="Collez votre JSON ici..."
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono text-sm"
+                      rows={12}
+                    />
+
+                    {jsonError && (
+                      <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-600">{jsonError}</p>
+                      </div>
+                    )}
+
+                    {importProgress.total > 0 && (
+                      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-sm font-medium text-blue-900">
+                            Import en cours...
+                          </p>
+                          <p className="text-sm font-bold text-blue-600">
+                            {importProgress.current} / {importProgress.total}
+                          </p>
+                        </div>
+                        <div className="w-full bg-blue-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${(importProgress.current / importProgress.total) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex justify-end gap-3 mt-6">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowJsonImport(false);
+                          setJsonInput('');
+                          setJsonError('');
+                        }}
+                        className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        disabled={loading}
+                      >
+                        Annuler
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleJsonImport}
+                        disabled={loading || !jsonInput.trim()}
+                        className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Upload className="w-4 h-4" />
+                        {loading ? 'Import en cours...' : 'Importer'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Form Modal */}
             {showForm && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                 <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] overflow-y-auto">
@@ -432,49 +630,6 @@ const QCMManagement = () => {
 
                   <form onSubmit={handleSubmit} className="p-6">
                     <div className="space-y-6">
-                      <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="font-semibold text-indigo-800 mb-1 flex items-center gap-2">
-                              <Upload className="w-4 h-4" />
-                              Import rapide JSON
-                            </h3>
-                            <p className="text-sm text-indigo-600">Collez votre JSON pour remplir automatiquement le formulaire</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setShowJsonImport(!showJsonImport)}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
-                          >
-                            {showJsonImport ? 'Fermer' : 'Importer JSON'}
-                          </button>
-                        </div>
-                        
-                        {showJsonImport && (
-                          <div className="mt-4 space-y-3">
-                            <textarea
-                              value={jsonInput}
-                              onChange={(e) => setJsonInput(e.target.value)}
-                              placeholder='{"question": "...", "questionArabic": "...", "options": [{"id": "a", "text": "...", "textArabic": "..."}, {"id": "b", "text": "...", "textArabic": "..."}, {"id": "c", "text": "...", "textArabic": "..."}, {"id": "d", "text": "...", "textArabic": "..."}], "correctAnswer": "a", "explanation": "...", "explanationArabic": "..."}'
-                              className="w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono text-sm"
-                              rows={8}
-                            />
-                            {jsonError && (
-                              <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
-                                {jsonError}
-                              </div>
-                            )}
-                            <button
-                              type="button"
-                              onClick={handleJsonImport}
-                              className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                            >
-                              ✓ Charger dans le formulaire
-                            </button>
-                          </div>
-                        )}
-                      </div>
-
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Question (Français) *
@@ -606,6 +761,7 @@ const QCMManagement = () => {
               </div>
             )}
 
+            {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                 <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
