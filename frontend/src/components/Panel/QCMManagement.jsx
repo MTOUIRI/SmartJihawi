@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, HelpCircle, Book, X, Save, AlertTriangle, Upload } from 'lucide-react';
-
-const API_URL = 'https://api.example.com'; // Remplacer par votre API_URL
+import API_URL from '../../config';
 
 const QCMManagement = () => {
   const [books] = useState([
