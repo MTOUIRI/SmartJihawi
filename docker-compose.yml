@@ -32,7 +32,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: CPhqn2UH.root
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: true
+      SPRING_JPA_SHOW_SQL: "true"
     depends_on:
       mysql:
         condition: service_healthy
