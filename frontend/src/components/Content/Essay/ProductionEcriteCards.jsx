@@ -36,7 +36,7 @@ const essayAPI = {
 const LoadingSpinner = ({ message = 'Chargement...' }) => (
   <div className="flex flex-col items-center justify-center py-12">
     <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
-    <p className="text-gray-600 font-medium">{message}</p>
+    <p className="text-gray-600 font-medium text-sm md:text-base">{message}</p>
   </div>
 );
 
@@ -46,8 +46,8 @@ const ErrorAlert = ({ message, onRetry }) => (
       <div className="flex items-start gap-3">
         <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <h3 className="text-red-800 font-semibold mb-1">Erreur de chargement</h3>
-          <p className="text-red-700 text-sm">{message}</p>
+          <h3 className="text-red-800 font-semibold mb-1 text-sm md:text-base">Erreur de chargement</h3>
+          <p className="text-red-700 text-xs md:text-sm">{message}</p>
           {onRetry && (
             <button
               onClick={onRetry}
@@ -124,31 +124,31 @@ const EssayGroupCard = ({ essayGroup, examTitle, examYear, onClick, showArabic, 
       )}
 
       {index === 0 && (
-        <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold z-20">
+        <div className="absolute top-3 right-3 bg-green-500 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold z-20">
           GRATUIT
         </div>
       )}
       
       <div className="h-2 bg-gradient-to-r from-pink-500 to-rose-600" />
       
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-4">
-        <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
-          <PenTool className="w-6 h-6 text-white" />
-        </div>
+      <div className="p-4 md:p-6">
+        <div className="flex items-start justify-between mb-3 md:mb-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+            <PenTool className="w-5 h-5 md:w-6 md:h-6 text-white" />
+          </div>
         </div>
 
         <div className={`mb-3 ${showArabic ? 'text-right' : 'text-left'}`}>
           {/* Display Essay Title if available */}
           {(essayTitle || essayTitleArabic) && (
             <div className="mb-3 flex items-start gap-2">
-              <Sparkles className="w-4 h-4 text-pink-600 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-pink-600 transition-colors">
+              <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-pink-600 flex-shrink-0 mt-1" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base md:text-lg font-bold text-gray-900 mb-1 group-hover:text-pink-600 transition-colors line-clamp-2">
                   {showArabic && essayTitleArabic ? essayTitleArabic : essayTitle}
                 </h3>
                 {showArabic && essayTitleArabic && essayTitle && (
-                  <p className="text-xs text-gray-500 text-left">
+                  <p className="text-xs text-gray-500 text-left truncate">
                     {essayTitle}
                   </p>
                 )}
@@ -158,12 +158,12 @@ const EssayGroupCard = ({ essayGroup, examTitle, examYear, onClick, showArabic, 
           
           {/* Fallback to regular title if no essay title */}
           {!essayTitle && !essayTitleArabic && (
-            <h3 className="text-lg font-bold text-gray-800 mb-1 group-hover:text-pink-600 transition-colors">
+            <h3 className="text-base md:text-lg font-bold text-gray-800 mb-1 group-hover:text-pink-600 transition-colors">
               {showArabic ? 'الإنتاج الكتابي' : 'Production Écrite'}
             </h3>
           )}
           
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-xs md:text-sm text-gray-600 line-clamp-2">
             {showArabic && essayGroup.previewTextArabic 
               ? essayGroup.previewTextArabic.substring(0, 80) + '...'
               : essayGroup.previewText.substring(0, 80) + '...'}
@@ -171,14 +171,14 @@ const EssayGroupCard = ({ essayGroup, examTitle, examYear, onClick, showArabic, 
         </div>
 
         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-          <div className="text-xs text-gray-500">
-            <p className="font-medium">{examTitle}</p>
+          <div className="text-xs text-gray-500 min-w-0 flex-1">
+            <p className="font-medium truncate">{examTitle}</p>
             <p>{examYear}</p>
           </div>
           
-          <div className="flex items-center gap-2 text-pink-600 font-semibold">
-            <span className="text-sm">Voir</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-center gap-1 md:gap-2 text-pink-600 font-semibold flex-shrink-0 ml-2">
+            <span className="text-xs md:text-sm">Voir</span>
+            <ChevronRight className="w-3 h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
 
@@ -299,7 +299,7 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="flex-1 p-6 md:p-8">
+        <div className="flex-1 p-4 md:p-6 lg:p-8">
           <LoadingSpinner message="Chargement des questions d'expression..." />
         </div>
       </div>
@@ -308,25 +308,25 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="flex-1 p-6 md:p-8">
+      <div className="flex-1 p-4 md:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
-          <header className="mb-8">
+          <header className="mb-6 md:mb-8">
             <button
               onClick={onBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-6 font-medium"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 md:mb-6 font-medium text-sm md:text-base"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
               {showArabic ? 'العودة' : 'Retour'}
             </button>
             
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-xl">
-                <PenTool className="w-10 h-10 text-white" />
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center mb-3 md:mb-4 mx-auto shadow-xl">
+                <PenTool className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">
                 {showArabic ? 'الإنتاج الكتابي' : 'Production Écrite'}
               </h1>
-              <p className="text-xl text-gray-600">
+              <p className="text-base md:text-xl text-gray-600">
                 {book.title}
               </p>
             </div>
@@ -338,7 +338,7 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
             <>
               {essayGroups.length > 0 ? (
                 <>
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
+                  <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8 md:mb-12">
                     {essayGroups.map((essayGroup, index) => (
                       <EssayGroupCard
                         key={essayGroup.examId}
@@ -354,17 +354,17 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
                     ))}
                   </div>
 
-                  {/* Simple Footer Info Banner */}
-                  <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 rounded-xl p-6 border border-pink-100 shadow-sm">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-pink-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <PenTool className="w-6 h-6 text-white" />
+                  {/* Simple Footer Info Banner - Mobile Responsive */}
+                  <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 rounded-xl p-4 md:p-6 border border-pink-100 shadow-sm">
+                    <div className="flex items-start gap-3 md:gap-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-pink-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <PenTool className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-pink-900 mb-2 text-lg">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-pink-900 mb-2 text-base md:text-lg">
                           Production écrite guidée
                         </h3>
-                        <p className="text-pink-800 text-sm leading-relaxed">
+                        <p className="text-pink-800 text-xs md:text-sm leading-relaxed">
                           Entraînez-vous à la rédaction avec des exercices structurés : introduction, développement et conclusion. 
                           {!user && (
                             <span className="font-semibold"> Inscrivez-vous maintenant pour un accès complet à 200 DH pour toute l'année.</span>
@@ -375,12 +375,12 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
                   </div>
                 </>
               ) : (
-                <div className="bg-white rounded-xl shadow-md p-12 text-center">
-                  <PenTool className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                <div className="bg-white rounded-xl shadow-md p-8 md:p-12 text-center">
+                  <PenTool className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
                     {showArabic ? 'لا توجد أسئلة تعبيرية' : 'Aucune question d\'expression'}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-sm md:text-base text-gray-600">
                     {showArabic 
                       ? 'لم يتم العثور على أسئلة تعبيرية لهذا الكتاب'
                       : 'Aucune question d\'expression trouvée pour ce livre'}

@@ -33,9 +33,9 @@ const EssaySection = ({
   const isWordPlacement = isProgressivePhrases || (question.dragDropWords && question.dragDropWords.template);
   
   const getIcon = () => {
-    if (isIntroduction) return <Lightbulb className="w-5 h-5" />;
-    if (isDevelopment) return <FileText className="w-5 h-5" />;
-    if (isConclusion) return <CheckCircle className="w-5 h-5" />;
+    if (isIntroduction) return <Lightbulb className="w-4 h-4 md:w-5 md:h-5" />;
+    if (isDevelopment) return <FileText className="w-4 h-4 md:w-5 md:h-5" />;
+    if (isConclusion) return <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />;
   };
   
   const getColorClasses = () => {
@@ -136,13 +136,13 @@ const EssaySection = ({
   const shouldHideQuestionBox = hideQuestionBox || isProgressivePhrases;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Show completion banner if all sections are done */}
       {showCompleteEssay && (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg p-4 shadow-lg animate-fadeIn">
-          <div className="flex items-center justify-center gap-3">
-            <CheckCircle className="w-6 h-6" />
-            <p className="font-bold text-lg">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg p-3 md:p-4 shadow-lg animate-fadeIn">
+          <div className="flex items-center justify-center gap-2 md:gap-3">
+            <CheckCircle className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+            <p className="font-bold text-sm md:text-lg text-center">
               {showArabic 
                 ? '🎉 رائع! لقد أكملت جميع أقسام المقال. اضغط على "التالي" لرؤية مقالك الكامل!' 
                 : '🎉 Excellent ! Vous avez terminé toutes les sections. Cliquez sur "Suivant" pour voir votre essai complet !'}
@@ -153,23 +153,23 @@ const EssaySection = ({
       
       {/* Only show question box if not progressive phrases and hideQuestionBox is false */}
       {!shouldHideQuestionBox && (
-        <div className={`bg-gradient-to-r ${getColorClasses()} rounded-lg p-4 border-l-4`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {getIcon()}
-              <div className="flex-1">
-                <h3 className={`text-lg font-bold ${showArabic ? 'text-right' : ''}`}>
+        <div className={`bg-gradient-to-r ${getColorClasses()} rounded-lg p-3 md:p-4 border-l-4`}>
+          <div className="flex items-start md:items-center justify-between gap-3">
+            <div className="flex items-start gap-2 md:gap-3 flex-1 min-w-0">
+              <div className="flex-shrink-0 mt-0.5 md:mt-0">{getIcon()}</div>
+              <div className="flex-1 min-w-0">
+                <h3 className={`text-sm md:text-lg font-bold ${showArabic ? 'text-right' : ''}`}>
                   {showArabic && question.questionArabic ? question.questionArabic : question.question}
                 </h3>
                 {showArabic && question.questionArabic && (
-                  <p className="text-sm opacity-75 text-left mt-1">
+                  <p className="text-xs md:text-sm opacity-75 text-left mt-1">
                     {question.question}
                   </p>
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium">
+            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+              <span className="text-xs md:text-sm font-medium whitespace-nowrap">
                 {question.points} {showArabic ? (question.points > 1 ? 'نقط' : 'نقطة') : (question.points > 1 ? 'points' : 'point')}
               </span>
               
@@ -183,7 +183,7 @@ const EssaySection = ({
                   }`}
                   title={showArabic ? 'مساعدة المفردات' : 'Aide vocabulaire'}
                 >
-                  <HelpCircle className="w-4 h-4" />
+                  <HelpCircle className="w-3 h-3 md:w-4 md:h-4" />
                 </button>
               )}
             </div>
@@ -193,11 +193,11 @@ const EssaySection = ({
 
       {!shouldHideQuestionBox && question.instruction && (
         <div className={`text-gray-700 ${showArabic ? 'text-right' : 'text-left'}`}>
-          <p className="font-medium">
+          <p className="font-medium text-sm md:text-base">
             {showArabic && question.instructionArabic ? question.instructionArabic : question.instruction}
           </p>
           {showArabic && question.instructionArabic && (
-            <p className="text-sm text-gray-500 border-t pt-2 text-left mt-2">
+            <p className="text-xs md:text-sm text-gray-500 border-t pt-2 text-left mt-2">
               {question.instruction}
             </p>
           )}
@@ -207,18 +207,18 @@ const EssaySection = ({
       {renderContent()}
 
       {showAnswers && showAnswers[question.id] && (
-        <div className={`mt-6 p-4 bg-green-50 border-l-4 border-green-500 rounded ${showArabic ? 'border-r-4 border-l-0 text-right' : ''}`}>
-          <p className="text-green-800 font-medium flex items-center gap-2">
-            <CheckCircle className="w-4 h-4" />
+        <div className={`mt-4 md:mt-6 p-3 md:p-4 bg-green-50 border-l-4 border-green-500 rounded ${showArabic ? 'border-r-4 border-l-0 text-right' : ''}`}>
+          <p className="text-green-800 font-medium flex items-center gap-2 text-sm md:text-base">
+            <CheckCircle className="w-3 h-3 md:w-4 md:h-4" />
             {showArabic ? 'الإجابة النموذجية:' : 'Réponse modèle :'}
           </p>
-          <div className="text-green-700 mt-2 whitespace-pre-line">
+          <div className="text-green-700 mt-2 whitespace-pre-line text-sm md:text-base">
             {showArabic && question.answerArabic ? question.answerArabic : question.answer}
           </div>
           {showArabic && question.answerArabic && question.answer && (
             <div className="mt-3 pt-3 border-t border-green-200">
-              <p className="text-green-600 text-sm font-medium">English/French:</p>
-              <div className="text-green-600 text-sm mt-1 whitespace-pre-line">
+              <p className="text-green-600 text-xs md:text-sm font-medium">English/French:</p>
+              <div className="text-green-600 text-xs md:text-sm mt-1 whitespace-pre-line">
                 {question.answer}
               </div>
             </div>

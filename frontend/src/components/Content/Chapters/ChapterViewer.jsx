@@ -12,11 +12,11 @@ const API_CONFIG = {
 
 // Loading Component
 const LoadingState = ({ message = 'Chargement des chapitres...' }) => (
-  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-    <div className="text-center p-8">
-      <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">{message}</h2>
-      <p className="text-gray-600">Veuillez patienter</p>
+  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <div className="text-center p-6 md:p-8">
+      <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-blue-600 animate-spin mx-auto mb-4" />
+      <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">{message}</h2>
+      <p className="text-sm md:text-base text-gray-600">Veuillez patienter</p>
     </div>
   </div>
 );
@@ -24,17 +24,17 @@ const LoadingState = ({ message = 'Chargement des chapitres...' }) => (
 // Error Component
 const ErrorState = ({ error, onRetry, onBack }) => (
   <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-    <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <AlertCircle className="w-8 h-8 text-red-600" />
+    <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-6 md:p-8 text-center">
+      <div className="w-12 h-12 md:w-16 md:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <AlertCircle className="w-6 h-6 md:w-8 md:h-8 text-red-600" />
       </div>
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Erreur de chargement</h2>
-      <p className="text-gray-600 mb-6">{error}</p>
-      <div className="flex gap-3 justify-center">
+      <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-2">Erreur de chargement</h2>
+      <p className="text-sm md:text-base text-gray-600 mb-6">{error}</p>
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
         {onRetry && (
           <button
             onClick={onRetry}
-            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm md:text-base"
           >
             Réessayer
           </button>
@@ -42,7 +42,7 @@ const ErrorState = ({ error, onRetry, onBack }) => (
         {onBack && (
           <button
             onClick={onBack}
-            className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+            className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium text-sm md:text-base"
           >
             Retour
           </button>
@@ -55,17 +55,17 @@ const ErrorState = ({ error, onRetry, onBack }) => (
 // Empty State Component
 const EmptyState = ({ onBack }) => (
   <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-    <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <BookOpen className="w-8 h-8 text-gray-400" />
+    <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-6 md:p-8 text-center">
+      <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-gray-400" />
       </div>
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Aucun chapitre disponible</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-2">Aucun chapitre disponible</h2>
+      <p className="text-sm md:text-base text-gray-600 mb-6">
         Ce livre ne contient pas encore de chapitres. Revenez plus tard.
       </p>
       <button
         onClick={onBack}
-        className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm md:text-base"
       >
         Retour à la bibliothèque
       </button>
@@ -77,13 +77,13 @@ const EmptyState = ({ onBack }) => (
 const ChapterSidebarItem = ({ chapter, isActive, onClick, isLocked, onShowLogin, index }) => {
   if (isLocked) {
     return (
-      <div className="relative w-full text-left p-4 rounded-xl bg-white border-2 border-gray-100 opacity-60">
-        <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 bg-gray-100 text-gray-400">
+      <div className="relative w-full text-left p-3 md:p-4 rounded-xl bg-white border-2 border-gray-100 opacity-60">
+        <div className="flex items-start gap-2 md:gap-3">
+          <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 bg-gray-100 text-gray-400">
             {chapter.chapterNumber}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm leading-tight mb-1.5 text-gray-500">
+            <h3 className="font-semibold text-xs md:text-sm leading-tight mb-1.5 text-gray-500 line-clamp-2">
               {chapter.title}
             </h3>
             <button
@@ -93,7 +93,7 @@ const ChapterSidebarItem = ({ chapter, isActive, onClick, isLocked, onShowLogin,
               Connectez-vous pour débloquer
             </button>
           </div>
-          <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <Lock className="w-3 h-3 md:w-4 md:h-4 text-gray-400 flex-shrink-0" />
         </div>
       </div>
     );
@@ -102,20 +102,20 @@ const ChapterSidebarItem = ({ chapter, isActive, onClick, isLocked, onShowLogin,
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left p-4 rounded-xl transition-all group relative ${
+      className={`w-full text-left p-3 md:p-4 rounded-xl transition-all group relative ${
         isActive
           ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm'
           : 'bg-white border-2 border-gray-100 hover:border-gray-200 hover:shadow-md'
       }`}
     >
       {index === 0 && (
-        <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+        <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2 bg-green-500 text-white px-1.5 md:px-2 py-0.5 rounded-full text-xs font-bold">
           GRATUIT
         </div>
       )}
       
-      <div className="flex items-start gap-3">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+      <div className="flex items-start gap-2 md:gap-3">
+        <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 ${
           isActive
             ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md'
             : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
@@ -123,18 +123,18 @@ const ChapterSidebarItem = ({ chapter, isActive, onClick, isLocked, onShowLogin,
           {chapter.chapterNumber}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className={`font-semibold text-sm leading-tight mb-1.5 ${
+          <h3 className={`font-semibold text-xs md:text-sm leading-tight mb-1 md:mb-1.5 line-clamp-2 ${
             isActive ? 'text-blue-900' : 'text-gray-800'
           }`}>
             {chapter.title}
           </h3>
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <Clock className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 md:gap-2 text-xs text-gray-500">
+            <Clock className="w-3 h-3 md:w-3.5 md:h-3.5" />
             <span>{chapter.duration}</span>
           </div>
         </div>
         {isActive && (
-          <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
+          <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-blue-600 flex-shrink-0" />
         )}
       </div>
     </button>
@@ -170,12 +170,12 @@ const VideoPlayer = ({ videoUrl, title, duration }) => {
   if (!embedUrl) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-        <div className="text-center p-8">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Play className="w-10 h-10 text-gray-400" />
+        <div className="text-center p-6 md:p-8">
+          <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <Play className="w-8 h-8 md:w-10 md:h-10 text-gray-400" />
           </div>
-          <p className="text-lg font-semibold text-gray-700 mb-1">Vidéo du chapitre</p>
-          <p className="text-sm text-gray-500">Durée: {duration}</p>
+          <p className="text-base md:text-lg font-semibold text-gray-700 mb-1">Vidéo du chapitre</p>
+          <p className="text-xs md:text-sm text-gray-500">Durée: {duration}</p>
         </div>
       </div>
     );
@@ -384,18 +384,19 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
           />
         )}
 
+        {/* Sidebar - Mobile Responsive */}
         <aside className={`${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 fixed lg:relative z-50 w-80 h-screen bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out flex flex-col shadow-xl lg:shadow-none`}>
+        } lg:translate-x-0 fixed lg:relative z-50 w-72 md:w-80 h-screen bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out flex flex-col shadow-xl lg:shadow-none`}>
           
-          <div className="p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+          <div className="p-4 md:p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className={`w-10 h-10 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center shadow-md flex-shrink-0`}>
-                  <BookOpen className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                <div className={`w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center shadow-md flex-shrink-0`}>
+                  <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-base font-bold text-gray-900 leading-tight">
+                  <h2 className="text-sm md:text-base font-bold text-gray-900 leading-tight truncate">
                     {book.title}
                   </h2>
                   <p className="text-xs text-gray-600 mt-0.5">
@@ -412,7 +413,7 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-3 md:p-4">
             <div className="space-y-2">
               {chapters.map((chapter, index) => (
                 <ChapterSidebarItem
@@ -428,8 +429,8 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
             </div>
             
             {!user && chapters.length > 1 && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-900 font-semibold mb-2">
+              <div className="mt-4 p-3 md:p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs md:text-sm text-blue-900 font-semibold mb-2">
                   🔒 {chapters.length - 1} autres chapitres
                 </p>
                 <p className="text-xs text-blue-700 mb-3">
@@ -437,7 +438,7 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
                 </p>
                 <button
                   onClick={handleShowRegistration}
-                  className="w-full px-3 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  className="w-full px-3 py-2 bg-blue-600 text-white text-xs md:text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   S'inscrire 
                 </button>
@@ -446,53 +447,55 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
           </div>
         </aside>
 
+        {/* Main Content - Mobile Responsive */}
         <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-white">
           
-          <header className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 flex items-center justify-between shadow-sm z-30">
-            <div className="flex items-center gap-4 min-w-0">
+          {/* Header - Mobile Responsive */}
+          <header className="bg-white border-b border-gray-200 px-3 md:px-4 lg:px-6 py-3 md:py-4 flex items-center justify-between shadow-sm z-30">
+            <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
                 aria-label="Ouvrir le menu"
               >
                 <Menu className="w-5 h-5" />
               </button>
               
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-md flex-shrink-0">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                <span className="px-2 md:px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-md flex-shrink-0">
                   CH {activeChapter}
                 </span>
-                <div className="w-px h-4 bg-gray-300 flex-shrink-0"></div>
-                <h1 className="font-semibold text-sm lg:text-base text-gray-900 truncate">
+                <div className="w-px h-4 bg-gray-300 flex-shrink-0 hidden sm:block"></div>
+                <h1 className="font-semibold text-xs sm:text-sm lg:text-base text-gray-900 truncate">
                   {currentChapter.title}
                 </h1>
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5 md:gap-1 flex-shrink-0">
               <button
                 onClick={goToPrevChapter}
                 disabled={isFirstChapter}
-                className={`p-2 rounded-lg transition-all ${
+                className={`p-1.5 md:p-2 rounded-lg transition-all ${
                   isFirstChapter
                     ? 'text-gray-300 cursor-not-allowed'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
                 aria-label="Chapitre précédent"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
               </button>
               <button
                 onClick={goToNextChapter}
                 disabled={isLastChapter}
-                className={`p-2 rounded-lg transition-all ${
+                className={`p-1.5 md:p-2 rounded-lg transition-all ${
                   isLastChapter
                     ? 'text-gray-300 cursor-not-allowed'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
                 aria-label="Chapitre suivant"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
           </header>
@@ -503,7 +506,8 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
             onShowLogin={onShowLogin}
             type="chapter"
           >
-                 <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* Video Container - Fixed aspect ratio on all devices */}
               <div className="bg-black w-full flex-shrink-0">
                 <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
                   <div className="absolute inset-0">
@@ -516,21 +520,23 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
                 </div>
               </div>
 
+              {/* Content Area - Now scrollable on all devices */}
               <div className="flex-1 overflow-y-auto bg-gray-50">
-                <div className="max-w-4xl mx-auto p-6 lg:p-8">
+                <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
                 
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <div className="flex items-start gap-4">
-                      <div className={`w-12 h-12 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0 shadow-md`}>
+                  {/* Chapter Info Card */}
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
+                    <div className="flex items-start gap-3 md:gap-4">
+                      <div className={`w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center text-white text-base md:text-lg font-bold flex-shrink-0 shadow-md`}>
                         {activeChapter}
                       </div>
-                      <div className="flex-1">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-2 leading-tight">
                           {currentChapter.title}
                         </h2>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="w-4 h-4" />
+                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-600">
+                          <div className="flex items-center gap-1 md:gap-1.5">
+                            <Clock className="w-3 h-3 md:w-4 md:h-4" />
                             <span className="font-medium">{currentChapter.duration}</span>
                           </div>
                           <span className="text-gray-300">•</span>
@@ -542,26 +548,28 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <BookOpen className="w-4 h-4 text-blue-600" />
+                  {/* Resume Card - Now visible and scrollable */}
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
+                    <div className="flex items-center gap-2 mb-3 md:mb-4">
+                      <div className="w-7 h-7 md:w-8 md:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600" />
                       </div>
-                      <h3 className="text-lg font-bold text-gray-900">Résumé du chapitre</h3>
+                      <h3 className="text-base md:text-lg font-bold text-gray-900">Résumé du chapitre</h3>
                     </div>
                     
-                    <div className="prose prose-gray max-w-none">
-                      <p className="text-gray-700 leading-relaxed text-justify whitespace-pre-line">
+                    <div className="prose prose-sm md:prose-gray max-w-none">
+                      <p className="text-sm md:text-base text-gray-700 leading-relaxed text-justify whitespace-pre-line">
                         {currentChapter.resume || 'Le résumé de ce chapitre sera bientôt disponible.'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-4 pt-4">
+                  {/* Navigation Buttons - Mobile Responsive */}
+                  <div className="flex items-center justify-between gap-3 md:gap-4 pt-4">
                     <button
                       onClick={goToPrevChapter}
                       disabled={isFirstChapter}
-                      className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                      className={`px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all flex items-center gap-1.5 md:gap-2 text-sm md:text-base ${
                         isFirstChapter
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-md'
@@ -571,14 +579,14 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
                       <span className="hidden sm:inline">Précédent</span>
                     </button>
 
-                    <div className="text-sm text-gray-500 font-medium hidden sm:block">
+                    <div className="text-xs md:text-sm text-gray-500 font-medium">
                       {currentIndex + 1} / {chapterNumbers.length}
                     </div>
 
                     <button
                       onClick={goToNextChapter}
                       disabled={isLastChapter}
-                      className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                      className={`px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all flex items-center gap-1.5 md:gap-2 text-sm md:text-base ${
                         isLastChapter
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : `bg-gradient-to-r ${book.color} text-white hover:shadow-lg hover:scale-105`

@@ -35,7 +35,7 @@ const ESSAY_TYPES = {
 const ArabicToggle = ({ showArabic, onToggle }) => (
   <button
     onClick={onToggle}
-    className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors font-medium"
+    className="px-3 py-1.5 md:px-4 md:py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors font-medium text-sm"
   >
     {showArabic ? 'Français' : 'العربية'}
   </button>
@@ -43,10 +43,10 @@ const ArabicToggle = ({ showArabic, onToggle }) => (
 
 // Progress Bar Component
 const ProgressBar = ({ current, total, color }) => (
-  <div className="bg-white border-b p-4">
+  <div className="bg-white border-b p-3 md:p-4">
     <div className="flex items-center justify-between mb-2">
-      <span className="text-sm text-gray-600">Question {current} sur {total}</span>
-      <span className="text-sm font-medium text-gray-700">{Math.round((current / total) * 100)}%</span>
+      <span className="text-xs md:text-sm text-gray-600">Question {current} sur {total}</span>
+      <span className="text-xs md:text-sm font-medium text-gray-700">{Math.round((current / total) * 100)}%</span>
     </div>
     <div className="w-full bg-gray-200 rounded-full h-2">
       <div 
@@ -125,18 +125,18 @@ const EssayViewer = ({ essay, exam, book, onBack, allEssays = [] }) => {
   };
 
   const renderEssayContent = () => {
-  if (currentEssay.type === 'essay_subject') {
-    return (
-      <div dir={showArabic ? 'rtl' : 'ltr'}>
-        <EssaySubject question={currentEssay} showArabic={showArabic} />
-      </div>
-    );
-  }
+    if (currentEssay.type === 'essay_subject') {
+      return (
+        <div dir={showArabic ? 'rtl' : 'ltr'}>
+          <EssaySubject question={currentEssay} showArabic={showArabic} />
+        </div>
+      );
+    }
     
     // For introduction, development, and conclusion - use EssaySection component
     if (['essay_introduction', 'essay_development', 'essay_conclusion'].includes(currentEssay.type)) {
       return (
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
           <EssaySection
             question={currentEssay}
             showArabic={showArabic}
@@ -155,7 +155,7 @@ const EssayViewer = ({ essay, exam, book, onBack, allEssays = [] }) => {
 
     return (
       <div className={`${showArabic ? 'text-right' : 'text-left'}`}>
-        <p className="text-lg text-gray-700">
+        <p className="text-base md:text-lg text-gray-700">
           {showArabic && currentEssay.questionArabic ? currentEssay.questionArabic : currentEssay.question}
         </p>
       </div>
@@ -175,10 +175,49 @@ const EssayViewer = ({ essay, exam, book, onBack, allEssays = [] }) => {
           />
         )}
 
-        {/* Compact Header */}
-        <div className="border-b px-6 py-3">
+        {/* Compact Header - Mobile Responsive */}
+        <div className="border-b px-3 py-2 md:px-6 md:py-3">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between gap-4">
+            {/* Mobile Layout */}
+            <div className="md:hidden">
+              {/* Top row: Back button and Arabic toggle */}
+              <div className="flex items-center justify-between mb-2">
+                <button
+                  onClick={onBack}
+                  className="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors font-medium"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="text-sm">{showArabic ? 'العودة' : 'Retour'}</span>
+                </button>
+                
+                {currentEssay.type === 'essay_subject' && (
+                  <ArabicToggle showArabic={showArabic} onToggle={() => setShowArabic(!showArabic)} />
+                )}
+              </div>
+              
+              {/* Bottom row: Icon and title */}
+              <div className={`flex items-center gap-2 ${showArabic ? 'flex-row-reverse' : ''}`}>
+                <div className={`w-10 h-10 bg-gradient-to-br ${typeConfig.color} rounded-lg flex items-center justify-center shadow flex-shrink-0`}>
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                
+                <div className={`flex-1 min-w-0 ${showArabic ? 'text-right' : ''}`}>
+                  <h1 className="text-sm font-bold text-gray-900 truncate">
+                    {currentEssay.type === 'essay_subject' 
+                      ? (showArabic && currentEssay.titleArabic ? currentEssay.titleArabic : currentEssay.title || typeConfig.label)
+                      : (showArabic ? typeConfig.labelArabic : typeConfig.label)}
+                  </h1>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <span className="truncate">{exam?.title || 'Examen'}</span>
+                    <span>•</span>
+                    <span>{exam?.year || new Date().getFullYear()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden md:flex items-center justify-between gap-4">
               {/* Left: Back button and Title */}
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <button
@@ -198,69 +237,69 @@ const EssayViewer = ({ essay, exam, book, onBack, allEssays = [] }) => {
                   
                   <div className={`flex-1 min-w-0 ${showArabic ? 'text-right' : ''}`}>
                     <h1 className="text-base font-bold text-gray-900 truncate">
-                    {currentEssay.type === 'essay_subject' 
-                      ? (showArabic && currentEssay.titleArabic ? currentEssay.titleArabic : currentEssay.title || typeConfig.label)
-                      : (showArabic ? typeConfig.labelArabic : typeConfig.label)}
-                  </h1>
-                  <div className="flex items-center gap-2 text-xs text-gray-600">
-                    <span className="truncate">{exam?.title || 'Examen'}</span>
-                    <span>•</span>
-                    <span>{exam?.year || new Date().getFullYear()}</span>
-                  </div>
+                      {currentEssay.type === 'essay_subject' 
+                        ? (showArabic && currentEssay.titleArabic ? currentEssay.titleArabic : currentEssay.title || typeConfig.label)
+                        : (showArabic ? typeConfig.labelArabic : typeConfig.label)}
+                    </h1>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <span className="truncate">{exam?.title || 'Examen'}</span>
+                      <span>•</span>
+                      <span>{exam?.year || new Date().getFullYear()}</span>
+                    </div>
                   </div>
                 </div>
-                {/* Right: Action buttons */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {/* Show Arabic toggle only for essay_subject */}
-                  {currentEssay.type === 'essay_subject' && (
-                    <ArabicToggle showArabic={showArabic} onToggle={() => setShowArabic(!showArabic)} />
-                  )}
-                </div>
-              </div>        
-             </div>
+              </div>
+              
+              {/* Right: Action buttons */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {currentEssay.type === 'essay_subject' && (
+                  <ArabicToggle showArabic={showArabic} onToggle={() => setShowArabic(!showArabic)} />
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="p-6">
+      <div className="p-3 md:p-6">
         <div className="max-w-6xl mx-auto">
           {renderEssayContent()}
 
-          {/* Navigation between essays */}
+          {/* Navigation between essays - Mobile Responsive */}
           {allEssays.length > 1 && (
-            <div className="flex items-center justify-between mt-6 bg-white rounded-lg shadow-md p-4">
+            <div className="flex items-center justify-between mt-4 md:mt-6 bg-white rounded-lg shadow-md p-3 md:p-4 gap-2">
               <button
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
                 <ChevronLeft className="w-4 h-4" />
-                {showArabic ? 'السابق' : 'Précédent'}
+                <span className="hidden sm:inline">{showArabic ? 'السابق' : 'Précédent'}</span>
               </button>
               
-              <span className="text-sm text-gray-600">
+              <span className="text-xs md:text-sm text-gray-600 font-medium">
                 {currentIndex + 1} / {allEssays.length}
               </span>
               
               <button
                 onClick={handleNext}
                 disabled={currentIndex === allEssays.length - 1}
-                className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${typeConfig.color} text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`flex items-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-gradient-to-r ${typeConfig.color} text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
               >
-                {showArabic ? 'التالي' : 'Suivant'}
+                <span className="hidden sm:inline">{showArabic ? 'التالي' : 'Suivant'}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           )}
 
-          {/* Footer Info */}
-          <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+          {/* Footer Info - Mobile Responsive */}
+          <div className="bg-white rounded-lg shadow-md p-4 md:p-6 mt-4 md:mt-6">
             <div className={`flex items-start gap-3 text-sm ${showArabic ? 'flex-row-reverse text-right' : ''}`}>
               <BookOpen className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className={showArabic ? 'text-right' : ''}>
                 <p className="text-gray-700 font-medium">{book?.title || 'Livre'}</p>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-xs md:text-sm">
                   {showArabic ? 'تمرن على كتابة إجابة منظمة ومنطقية' 
                              : 'Entraînez-vous à rédiger une réponse structurée et argumentée'}
                 </p>

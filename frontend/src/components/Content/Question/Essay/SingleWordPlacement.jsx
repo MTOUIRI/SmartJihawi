@@ -21,18 +21,18 @@ const SingleWordPlacement = ({
   const [verificationResult, setVerificationResult] = useState({});
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-// Reset state when question changes
-useEffect(() => {
-  setSelectedWord(null);
-  setShowAnswer(false);
-  setCelebrateSlot(null);
-  setShakeSlot(null);
-  setIsVerified(false);
-  setVerificationResult({});
-  stopSpeaking();
-}, [question.id]);
+  // Reset state when question changes
+  useEffect(() => {
+    setSelectedWord(null);
+    setShowAnswer(false);
+    setCelebrateSlot(null);
+    setShakeSlot(null);
+    setIsVerified(false);
+    setVerificationResult({});
+    stopSpeaking();
+  }, [question.id]);
 
-const shuffleArray = (array) => {
+  const shuffleArray = (array) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -232,7 +232,7 @@ const shuffleArray = (array) => {
   }, []);
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-4 sm:space-y-6 relative">
       {/* Confetti Effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
@@ -247,32 +247,32 @@ const shuffleArray = (array) => {
                 animationDuration: `${2 + Math.random() * 2}s`
               }}
             >
-              <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" />
             </div>
           ))}
         </div>
       )}
 
       {/* Progress & Stats Header */}
-      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl p-6 shadow-lg text-white">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-3">
-              <Trophy className="w-6 h-6" />
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg text-white">
+        <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-2 sm:p-3">
+              <Trophy className="w-4 h-4 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="text-sm opacity-90">{showArabic ? 'النقاط' : 'Score'}</p>
-              <p className="text-2xl font-bold">{score}</p>
+              <p className="text-xs sm:text-sm opacity-90">{showArabic ? 'النقاط' : 'Score'}</p>
+              <p className="text-lg sm:text-2xl font-bold">{score}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-3">
-              <Zap className="w-6 h-6" />
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-2 sm:p-3">
+              <Zap className="w-4 h-4 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="text-sm opacity-90">{showArabic ? 'السلسلة' : 'Série'}</p>
-              <p className="text-2xl font-bold">{streak} 🔥</p>
+              <p className="text-xs sm:text-sm opacity-90">{showArabic ? 'السلسلة' : 'Série'}</p>
+              <p className="text-lg sm:text-2xl font-bold">{streak} 🔥</p>
             </div>
           </div>
 
@@ -286,20 +286,21 @@ const shuffleArray = (array) => {
               setSelectedWord(null);
               stopSpeaking();
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-lg hover:bg-opacity-30 transition-all"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-lg hover:bg-opacity-30 transition-all text-sm sm:text-base"
           >
-            <RotateCcw className="w-4 h-4" />
-            <span className="font-medium">{showArabic ? 'إعادة' : 'Reset'}</span>
+            <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="font-medium hidden sm:inline">{showArabic ? 'إعادة' : 'Reset'}</span>
+            <span className="font-medium sm:hidden">↻</span>
           </button>
         </div>
 
         {/* Progress Bar */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-xs sm:text-sm">
             <span>{showArabic ? 'التقدم' : 'Progression'}</span>
             <span className="font-bold">{filledSlots} / {totalSlots}</span>
           </div>
-          <div className="h-3 bg-white bg-opacity-20 rounded-full overflow-hidden">
+          <div className="h-2 sm:h-3 bg-white bg-opacity-20 rounded-full overflow-hidden">
             <div 
               className="h-full bg-white transition-all duration-500 ease-out rounded-full shadow-lg"
               style={{ width: `${progress}%` }}
@@ -309,7 +310,7 @@ const shuffleArray = (array) => {
 
         {/* Motivational Message */}
         {progress > 0 && progress < 100 && (
-          <div className="mt-3 text-center text-sm opacity-90">
+          <div className="mt-2 sm:mt-3 text-center text-xs sm:text-sm opacity-90">
             {progress < 30 && (showArabic ? '🌱 بداية رائعة!' : '🌱 Super début!')}
             {progress >= 30 && progress < 70 && (showArabic ? '💪 استمر!' : '💪 Continue comme ça!')}
             {progress >= 70 && progress < 100 && (showArabic ? '🚀 تقريبا انتهيت!' : '🚀 Presque terminé!')}
@@ -317,16 +318,16 @@ const shuffleArray = (array) => {
         )}
 
         {isVerified && verificationResult.isCorrect && (
-          <div className="mt-3 text-center animate-bounce">
-            <p className="text-lg font-bold">
+          <div className="mt-2 sm:mt-3 text-center animate-bounce">
+            <p className="text-base sm:text-lg font-bold">
               🎉 {showArabic ? 'ممتاز! إجابة صحيحة!' : 'Excellent! Réponse correcte!'}
             </p>
           </div>
         )}
 
         {isVerified && !verificationResult.isCorrect && (
-          <div className="mt-3 text-center">
-            <p className="text-sm font-medium">
+          <div className="mt-2 sm:mt-3 text-center">
+            <p className="text-xs sm:text-sm font-medium">
               😊 {showArabic 
                 ? `${verificationResult.correctCount} من ${verificationResult.totalCount} صحيح - حاول مرة أخرى!` 
                 : `${verificationResult.correctCount} sur ${verificationResult.totalCount} correct - Réessayez!`}
@@ -337,19 +338,21 @@ const shuffleArray = (array) => {
 
       {/* Instruction Banner */}
       {selectedWord && !isVerified && (
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-4 shadow-lg text-white animate-fadeIn">
-          <p className="text-center font-semibold flex items-center justify-center gap-2">
-            <Sparkles className="w-5 h-5" />
-            {showArabic 
-              ? `كلمة محددة: "${selectedWord}" - انقر على الفراغ لوضعها` 
-              : `Mot sélectionné: "${selectedWord}" - Cliquez sur un espace pour le placer`}
+        <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg text-white animate-fadeIn">
+          <p className="text-center text-xs sm:text-base font-semibold flex items-center justify-center gap-2">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+            <span className="truncate">
+              {showArabic 
+                ? `"${selectedWord}" - انقر على الفراغ` 
+                : `"${selectedWord}" - Cliquez sur un espace`}
+            </span>
           </p>
         </div>
       )}
 
       {/* Main Template Area with Clickable Slots */}
-      <div className={`bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-xl p-8 shadow-md ${showArabic ? 'text-right' : 'text-left'}`}>
-        <div className="text-lg leading-relaxed">
+      <div className={`bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8 shadow-md ${showArabic ? 'text-right' : 'text-left'}`}>
+        <div className="text-sm sm:text-base md:text-lg leading-loose sm:leading-relaxed">
           {parts.map((part, index) => {
             if (part.type === 'text') {
               return <span key={index} className="text-gray-800">{part.content}</span>;
@@ -364,15 +367,15 @@ const shuffleArray = (array) => {
                 <span
                   key={index}
                   onClick={() => isClickable && handleSlotClick(part.slotIndex)}
-                  className={`relative inline-flex items-center min-w-[140px] mx-2 px-4 py-3 border-2 rounded-xl transition-all duration-300 transform text-base
+                  className={`relative inline-flex items-center min-w-[80px] sm:min-w-[100px] md:min-w-[120px] mx-1 my-1 px-2 sm:px-2.5 md:px-3 py-1.5 sm:py-2 border rounded-md sm:rounded-lg transition-all duration-300 transform text-xs sm:text-sm md:text-base align-middle
                     ${part.word 
                       ? isVerified
                         ? isCorrectWord
-                          ? 'border-green-400 bg-gradient-to-r from-green-100 to-green-50 text-green-800 shadow-md'
-                          : 'border-red-400 bg-gradient-to-r from-red-100 to-red-50 text-red-800 shadow-md'
-                        : 'border-blue-400 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 shadow-md hover:shadow-lg hover:scale-105'
+                          ? 'border-green-500 bg-gradient-to-r from-green-100 to-green-50 text-green-800 shadow-sm'
+                          : 'border-red-500 bg-gradient-to-r from-red-100 to-red-50 text-red-800 shadow-sm'
+                        : 'border-purple-500 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 shadow-sm hover:shadow-md hover:scale-105'
                       : isClickable
-                        ? 'border-yellow-400 bg-gradient-to-r from-yellow-100 to-yellow-50 shadow-lg cursor-pointer hover:scale-105 border-dashed'
+                        ? 'border-yellow-400 bg-gradient-to-r from-yellow-100 to-yellow-50 shadow-md cursor-pointer hover:scale-105 border-dashed'
                         : 'border-gray-300 bg-white border-dashed hover:border-gray-400 hover:bg-gray-50 cursor-default'
                     }
                     ${isCelebrating ? 'animate-celebrate' : ''}
@@ -380,14 +383,14 @@ const shuffleArray = (array) => {
                   `}
                 >
                   {part.word ? (
-                    <span className="flex items-center justify-between gap-2 w-full">
-                      <span className="font-medium flex-1 text-base">{part.word}</span>
+                    <span className="flex items-center justify-between gap-1 sm:gap-2 w-full">
+                      <span className="font-medium flex-1 text-xs sm:text-sm md:text-base truncate">{part.word}</span>
                       <div className="flex items-center gap-1 flex-shrink-0">
                         {isVerified && (
                           isCorrectWord ? (
-                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                           ) : (
-                            <X className="w-4 h-4 text-red-600" />
+                            <X className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
                           )
                         )}
                         {!isVerified && (
@@ -396,15 +399,15 @@ const shuffleArray = (array) => {
                               e.stopPropagation();
                               removeWord(part.slotIndex);
                             }}
-                            className="p-1 hover:bg-red-100 rounded transition-colors group"
+                            className="p-0.5 sm:p-1 hover:bg-red-100 rounded transition-colors group"
                           >
-                            <X className="w-3 h-3 text-red-500 group-hover:text-red-700" />
+                            <X className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-500 group-hover:text-red-700" />
                           </button>
                         )}
                       </div>
                     </span>
                   ) : (
-                    <span className="text-gray-400 text-center block w-full text-base">
+                    <span className="text-gray-400 text-center block w-full text-xs sm:text-sm md:text-base">
                       {isClickable ? '✨' : `[${part.slotIndex}]`}
                     </span>
                   )}
@@ -417,28 +420,28 @@ const shuffleArray = (array) => {
 
       {/* Enhanced Word Bank */}
       {availableWords.length > 0 && !isVerified && (
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-200 shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className={`font-bold text-purple-800 flex items-center gap-2 ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
-              <Sparkles className="w-5 h-5" />
+        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border-2 border-purple-200 shadow-md">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h4 className={`font-bold text-purple-800 flex items-center gap-2 text-sm sm:text-base ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
               {showArabic ? 'بنك الكلمات' : 'Banque de mots'}
             </h4>
-            <span className="text-sm text-purple-600 font-medium bg-purple-100 px-3 py-1 rounded-full">
+            <span className="text-xs sm:text-sm text-purple-600 font-medium bg-purple-100 px-2 sm:px-3 py-1 rounded-full">
               {availableWords.length} {showArabic ? 'متبقي' : 'restant'}
             </span>
           </div>
           
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {availableWords.map((word, index) => (
               <button
                 key={`${word}-${index}`}
                 onClick={() => handleWordClick(word)}
                 className={`
-                  px-5 py-3 bg-gradient-to-r text-white rounded-xl 
-                  transition-all duration-300 select-none font-medium shadow-md
+                  px-3 sm:px-4 md:px-5 py-2 sm:py-3 bg-gradient-to-r text-white rounded-lg sm:rounded-xl 
+                  transition-all duration-300 select-none font-medium shadow-md text-xs sm:text-sm md:text-base
                   hover:shadow-xl hover:scale-110 active:scale-95
                   ${selectedWord === word 
-                    ? 'from-yellow-500 to-orange-500 ring-4 ring-yellow-300 scale-110' 
+                    ? 'from-yellow-500 to-orange-500 ring-2 sm:ring-4 ring-yellow-300 scale-110' 
                     : 'from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:-translate-y-1'
                   }
                 `}
@@ -448,7 +451,7 @@ const shuffleArray = (array) => {
             ))}
           </div>
           
-          <p className="text-xs text-purple-600 mt-4 text-center italic">
+          <p className="text-xs sm:text-sm text-purple-600 mt-3 sm:mt-4 text-center italic">
             {showArabic ? '🎯 انقر على كلمة ثم انقر على الفراغ لوضعها' : '🎯 Cliquez sur un mot puis sur un espace pour le placer'}
           </p>
         </div>
@@ -459,10 +462,10 @@ const shuffleArray = (array) => {
         <div className="flex justify-center">
           <button
             onClick={handleVerifyAnswer}
-            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-bold text-lg"
+            className="flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg sm:rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-bold text-sm sm:text-base md:text-lg"
           >
-            <CheckCircle className="w-6 h-6" />
-            {showArabic ? 'تحقق من الإجابة' : 'Vérifier la réponse'}
+            <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            {showArabic ? 'تحقق من الإجابة' : 'Vérifier'}
           </button>
         </div>
       )}
@@ -472,9 +475,9 @@ const shuffleArray = (array) => {
         <div className="flex justify-center gap-4">
           <button
             onClick={handleTryAgain}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
+            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg sm:rounded-xl hover:from-orange-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold text-sm sm:text-base"
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
             {showArabic ? 'حاول مرة أخرى' : 'Réessayer'}
           </button>
         </div>
@@ -482,20 +485,20 @@ const shuffleArray = (array) => {
 
       {/* Complete Answer Display */}
       {isVerified && verificationResult.isCorrect && (question.answer || question.answerArabic) && (
-        <div className="border-t-2 border-gray-200 pt-6">
-          <div className="flex items-center gap-3">
+        <div className="border-t-2 border-gray-200 pt-4 sm:pt-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <button
               onClick={() => {
                 setShowAnswer(!showAnswer);
                 if (showAnswer) stopSpeaking();
               }}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg"
+              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg sm:rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg text-sm sm:text-base"
             >
-              {showAnswer ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showAnswer ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
               <span className="font-semibold">
                 {showAnswer 
-                  ? (showArabic ? 'إخفاء الإجابة الكاملة' : 'Masquer la réponse complète')
-                  : (showArabic ? 'عرض الإجابة الكاملة' : 'Afficher la réponse complète')
+                  ? (showArabic ? 'إخفاء' : 'Masquer')
+                  : (showArabic ? 'عرض الإجابة' : 'Afficher')
                 }
               </span>
             </button>
@@ -503,14 +506,14 @@ const shuffleArray = (array) => {
             {showAnswer && question.answer && (
               <button
                 onClick={() => speakText(question.answer)}
-                className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all shadow-md hover:shadow-lg ${
+                className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all shadow-md hover:shadow-lg text-sm sm:text-base ${
                   isSpeaking 
                     ? 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600' 
                     : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
                 } text-white`}
                 title={isSpeaking ? 'Arrêter la lecture' : 'Lire la réponse'}
               >
-                {isSpeaking ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                {isSpeaking ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
                 <span className="font-semibold">
                   {isSpeaking ? (showArabic ? 'إيقاف' : 'Stop') : (showArabic ? 'استمع' : 'Écouter')}
                 </span>
@@ -519,36 +522,36 @@ const shuffleArray = (array) => {
           </div>
 
           {showAnswer && (
-            <div className="mt-4 p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-300 rounded-xl shadow-lg animate-fadeIn">
-              <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="w-6 h-6 text-purple-600" />
-                <h4 className={`font-bold text-purple-900 text-lg ${showArabic ? 'text-right' : 'text-left'}`}>
+            <div className="mt-3 sm:mt-4 p-4 sm:p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-300 rounded-lg sm:rounded-xl shadow-lg animate-fadeIn">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+                <h4 className={`font-bold text-purple-900 text-base sm:text-lg ${showArabic ? 'text-right' : 'text-left'}`}>
                   {showArabic ? 'الإجابة الكاملة' : 'Réponse complète'}
                 </h4>
               </div>
               
               {!showArabic && question.answer && (
-                <div className="mb-3 p-4 bg-white rounded-lg border border-purple-200 shadow-sm">
-                  <p className="text-gray-800 leading-relaxed">
+                <div className="mb-3 p-3 sm:p-4 bg-white rounded-lg border border-purple-200 shadow-sm">
+                  <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
                     {question.answer}
                   </p>
                 </div>
               )}
               
               {showArabic && question.answerArabic && (
-                <div className="p-4 bg-white rounded-lg border border-purple-200 text-right shadow-sm" dir="rtl">
-                  <p className="text-gray-800 leading-relaxed">
+                <div className="p-3 sm:p-4 bg-white rounded-lg border border-purple-200 text-right shadow-sm" dir="rtl">
+                  <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
                     {question.answerArabic}
                   </p>
                 </div>
               )}
 
               {!showArabic && question.answerArabic && (
-                <div className="mt-3 p-4 bg-white rounded-lg border border-purple-200 text-right shadow-sm" dir="rtl">
-                  <p className="text-sm text-gray-600 mb-2 text-left" dir="ltr">
+                <div className="mt-3 p-3 sm:p-4 bg-white rounded-lg border border-purple-200 text-right shadow-sm" dir="rtl">
+                  <p className="text-xs sm:text-sm text-gray-600 mb-2 text-left" dir="ltr">
                     Version arabe :
                   </p>
-                  <p className="text-gray-800 leading-relaxed">
+                  <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
                     {question.answerArabic}
                   </p>
                 </div>
@@ -558,37 +561,37 @@ const shuffleArray = (array) => {
         </div>
       )}
 
-    {/* Vocabulary Helper */}
+      {/* Vocabulary Helper */}
       {question.helper && (
-        <div className="border-t-2 border-gray-200 pt-6">
+        <div className="border-t-2 border-gray-200 pt-4 sm:pt-6">
           <button
             onClick={() => toggleHelper && toggleHelper(question.id)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg"
+            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg text-sm sm:text-base"
           >
-            <HelpCircle className="w-5 h-5" />
+            <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="font-semibold">
               {showArabic ? 'مساعدة المفردات' : 'Aide vocabulaire'}
             </span>
-            {isHelperVisible ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            {isHelperVisible ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
           
           {isHelperVisible && (
-            <div className="mt-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg animate-fadeIn">
-              <h4 className={`font-bold text-blue-900 mb-4 flex items-center gap-2 text-lg ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
-                <Sparkles className="w-5 h-5" />
+            <div className="mt-3 sm:mt-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border-2 border-blue-200 shadow-lg animate-fadeIn">
+              <h4 className={`font-bold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base md:text-lg ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                 {showArabic ? 'مفردات مفيدة' : 'Vocabulaire utile'}
               </h4>
               
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {shuffledHelperWords && shuffledHelperWords.map((item, idx) => {
                   return (
-                    <div key={idx} className={`flex items-center gap-3 p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-all hover:shadow-md ${showArabic ? 'flex-row-reverse' : ''}`}>
-                      <span className="px-3 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-sm font-semibold min-w-0 flex-1 text-center shadow-sm">
-                        {item.french}
+                    <div key={idx} className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-all hover:shadow-md ${showArabic ? 'flex-row-reverse' : ''}`}>
+                      <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0">
+                        <span className="block truncate">{item.french}</span>
                       </span>
-                      <span className="text-blue-600 font-bold text-lg">↔</span>
-                      <span className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-sm font-semibold min-w-0 flex-1 text-center shadow-sm" dir="rtl">
-                        {item.arabic}
+                      <span className="text-blue-600 font-bold text-sm sm:text-base md:text-lg flex-shrink-0">↔</span>
+                      <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0" dir="rtl">
+                        <span className="block truncate">{item.arabic}</span>
                       </span>
                     </div>
                   );

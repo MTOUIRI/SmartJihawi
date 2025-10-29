@@ -36,7 +36,6 @@ const ProgressivePhrases = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [phraseValidation, setPhraseValidation] = useState({});
-  const [isStatsCollapsed, setIsStatsCollapsed] = useState(false);
 
   // Shuffle words for each phrase once when component mounts or question changes
   const shuffledPhraseWords = useMemo(() => {
@@ -257,6 +256,13 @@ const ProgressivePhrases = ({
     return 'border-purple-200';
   };
 
+  const getSectionTextColor = () => {
+    if (isIntroduction) return 'blue';
+    if (isDevelopment) return 'emerald';
+    if (isConclusion) return 'purple';
+    return 'purple';
+  };
+
   const handleTryAgain = () => {
     setPhraseValidation(prev => {
       const newValidation = { ...prev };
@@ -273,6 +279,7 @@ const ProgressivePhrases = ({
   const totalPhrases = question.progressivePhrases.length;
   const overallProgress = (verifiedPhrases.size / totalPhrases) * 100;
   const currentValidation = phraseValidation[currentPhraseIndex];
+  const sectionColor = getSectionTextColor();
 
   // Parse template
   const parts = [];
@@ -313,7 +320,7 @@ const ProgressivePhrases = ({
   }, []);
 
   return (
-    <div className="space-y-4 relative">
+    <div className="space-y-3 sm:space-y-4 relative">
       {/* Confetti Effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
@@ -328,41 +335,42 @@ const ProgressivePhrases = ({
                 animationDuration: `${2 + Math.random() * 2}s`
               }}
             >
-              <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" />
             </div>
           ))}
         </div>
       )}
 
-      {/* Medium Progress & Stats Header */}
-      <div className={`bg-gradient-to-r ${getSectionColor()} rounded-xl shadow-md text-white`}>
-        <div className="p-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
-                <span className="text-lg font-bold">{score}</span>
+      {/* Progress & Stats Header - Responsive */}
+      <div className={`bg-gradient-to-r ${getSectionColor()} rounded-lg sm:rounded-xl shadow-md text-white`}>
+        <div className="p-3 sm:p-4 md:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-base sm:text-lg font-bold">{score}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5" />
-                <span className="text-lg font-bold">{streak} 🔥</span>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-base sm:text-lg font-bold">{streak} 🔥</span>
               </div>
             </div>
 
-            <div className="text-base font-bold">
+            <div className="text-sm sm:text-base font-bold">
               {verifiedPhrases.size} / {totalPhrases}
             </div>
 
             <button
               onClick={resetAll}
-              className="flex items-center gap-2 px-3 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-lg hover:bg-opacity-30 transition-all text-sm font-medium"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-lg hover:bg-opacity-30 transition-all text-xs sm:text-sm font-medium"
             >
-              <RotateCcw className="w-4 h-4" />
-              <span>{showArabic ? 'إعادة' : 'Reset'}</span>
+              <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">{showArabic ? 'إعادة' : 'Reset'}</span>
+              <span className="sm:hidden">↻</span>
             </button>
           </div>
 
-          <div className="mt-3 h-2.5 bg-white bg-opacity-20 rounded-full overflow-hidden">
+          <div className="mt-2 sm:mt-3 h-2 sm:h-2.5 bg-white bg-opacity-20 rounded-full overflow-hidden">
             <div 
               className="h-full bg-white transition-all duration-500 ease-out rounded-full"
               style={{ width: `${overallProgress}%` }}
@@ -372,7 +380,7 @@ const ProgressivePhrases = ({
 
         {/* Motivational Message */}
         {overallProgress > 0 && overallProgress < 100 && (
-          <div className="px-5 pb-3 text-center text-sm opacity-90">
+          <div className="px-3 sm:px-5 pb-2 sm:pb-3 text-center text-xs sm:text-sm opacity-90">
             {overallProgress < 30 && (showArabic ? '🌱 بداية رائعة!' : '🌱 Super début!')}
             {overallProgress >= 30 && overallProgress < 70 && (showArabic ? '💪 استمر!' : '💪 Continue!')}
             {overallProgress >= 70 && overallProgress < 100 && (showArabic ? '🚀 تقريبا!' : '🚀 Presque fini!')}
@@ -380,40 +388,42 @@ const ProgressivePhrases = ({
         )}
 
         {overallProgress === 100 && (
-          <div className="px-5 pb-3 text-center text-base font-bold">
+          <div className="px-3 sm:px-5 pb-2 sm:pb-3 text-center text-sm sm:text-base font-bold">
             🎉 {showArabic ? 'ممتاز!' : 'Excellent!'}
           </div>
         )}
       </div>
 
-      {/* Medium Phrase Navigation */}
-      <div className={`bg-gradient-to-br ${getSectionBgColor()} rounded-xl p-4 border ${getSectionBorderColor()} shadow-sm`}>
-        <div className="flex items-center justify-between">
+      {/* Phrase Navigation - Responsive */}
+      <div className={`bg-gradient-to-br ${getSectionBgColor()} rounded-lg sm:rounded-xl p-3 sm:p-4 border ${getSectionBorderColor()} shadow-sm`}>
+        <div className="flex items-center justify-between gap-2">
           <button
             onClick={moveToPreviousPhrase}
             disabled={currentPhraseIndex === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg hover:shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-white rounded-lg hover:shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
           >
-            <ChevronLeft className="w-4 h-4" />
-            <span className="font-medium">{showArabic ? 'السابقة' : 'Précédente'}</span>
+            <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="font-medium hidden sm:inline">{showArabic ? 'السابقة' : 'Précédente'}</span>
+            <span className="font-medium sm:hidden">{showArabic ? 'السابق' : 'Préc'}</span>
           </button>
           
           <div className="text-center">
-            <p className="text-xl font-bold">{currentPhraseIndex + 1} / {totalPhrases}</p>
+            <p className="text-lg sm:text-xl font-bold">{currentPhraseIndex + 1} / {totalPhrases}</p>
           </div>
           
           <button
             onClick={moveToNextPhrase}
             disabled={!verifiedPhrases.has(currentPhraseIndex) || currentPhraseIndex >= totalPhrases - 1}
-            className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${getSectionColor()} text-white rounded-lg hover:shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gradient-to-r ${getSectionColor()} text-white rounded-lg hover:shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm`}
           >
-            <span className="font-medium">{showArabic ? 'التالية' : 'Suivante'}</span>
-            <ChevronRight className="w-4 h-4" />
+            <span className="font-medium hidden sm:inline">{showArabic ? 'التالية' : 'Suivante'}</span>
+            <span className="font-medium sm:hidden">{showArabic ? 'التالي' : 'Suiv'}</span>
+            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
         </div>
 
         {/* Progress Dots */}
-        <div className="flex gap-2 mt-3">
+        <div className="flex gap-1 sm:gap-2 mt-2 sm:mt-3">
           {question.progressivePhrases.map((_, index) => {
             const isVerified = verifiedPhrases.has(index);
             const isCurrent = index === currentPhraseIndex;
@@ -421,7 +431,7 @@ const ProgressivePhrases = ({
             return (
               <div
                 key={index}
-                className={`flex-1 h-2.5 rounded-full transition-all ${
+                className={`flex-1 h-2 sm:h-2.5 rounded-full transition-all ${
                   isVerified 
                     ? 'bg-green-500' 
                     : isCurrent 
@@ -431,7 +441,7 @@ const ProgressivePhrases = ({
               >
                 {isVerified && (
                   <div className="h-full flex items-center justify-center">
-                    <Check className="w-3 h-3 text-white" />
+                    <Check className="w-2 h-2 sm:w-3 sm:h-3 text-white" />
                   </div>
                 )}
               </div>
@@ -440,9 +450,9 @@ const ProgressivePhrases = ({
         </div>
       </div>
 
-      {/* Current Phrase Template - Medium Size with Simple Placeholders */}
-      <div className={`bg-gradient-to-br ${getSectionBgColor()} border ${getSectionBorderColor()} rounded-xl p-6 shadow-sm ${showArabic ? 'text-right' : 'text-left'}`}>
-        <div className="text-lg leading-relaxed">
+      {/* Current Phrase Template - Responsive */}
+      <div className={`bg-gradient-to-br ${getSectionBgColor()} border ${getSectionBorderColor()} rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 shadow-sm ${showArabic ? 'text-right' : 'text-left'}`}>
+        <div className="text-sm sm:text-base md:text-lg leading-loose sm:leading-relaxed">
           {parts.map((part, index) => {
             if (part.type === 'text') {
               return <span key={index} className="text-gray-800">{part.content}</span>;
@@ -455,13 +465,13 @@ const ProgressivePhrases = ({
                 <span
                   key={index}
                   onClick={() => isClickable && handleSlotClick(part.slotIndex)}
-                  className={`relative inline-flex items-center min-w-[130px] mx-2 px-4 py-2.5 border-2 rounded-xl transition-all duration-300 transform
+                  className={`relative inline-flex items-center min-w-[80px] sm:min-w-[100px] md:min-w-[120px] mx-1 my-1 px-2 sm:px-2.5 md:px-3 py-1.5 sm:py-2 md:py-2.5 border rounded-md sm:rounded-lg md:rounded-xl transition-all duration-300 transform text-xs sm:text-sm md:text-base align-middle
                     ${part.word 
                       ? isCurrentPhraseVerified || isCorrectSlot
-                        ? 'border-green-400 bg-gradient-to-r from-green-100 to-green-50 text-green-800 shadow-md'
+                        ? 'border-green-500 bg-gradient-to-r from-green-100 to-green-50 text-green-800 shadow-sm'
                         : isIncorrectSlot
-                          ? 'border-red-400 bg-gradient-to-r from-red-100 to-red-50 text-red-800 shadow-md'
-                          : `border-${isIntroduction ? 'blue' : isDevelopment ? 'emerald' : 'purple'}-400 bg-gradient-to-r from-${isIntroduction ? 'blue' : isDevelopment ? 'emerald' : 'purple'}-100 to-${isIntroduction ? 'blue' : isDevelopment ? 'emerald' : 'purple'}-50 text-${isIntroduction ? 'blue' : isDevelopment ? 'emerald' : 'purple'}-800 shadow-md hover:shadow-lg hover:scale-105`
+                          ? 'border-red-500 bg-gradient-to-r from-red-100 to-red-50 text-red-800 shadow-sm'
+                          : `border-${sectionColor}-500 bg-gradient-to-r from-${sectionColor}-100 to-${sectionColor}-50 text-${sectionColor}-800 shadow-sm hover:shadow-md hover:scale-105`
                       : isClickable
                         ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-amber-50 shadow-md cursor-pointer hover:scale-105 border-dashed'
                         : 'border-gray-300 bg-white border-dashed hover:border-gray-400 hover:bg-gray-50 cursor-default'
@@ -469,14 +479,14 @@ const ProgressivePhrases = ({
                   `}
                 >
                   {part.word ? (
-                    <span className="flex items-center justify-between gap-2 w-full">
-                      <span className="font-medium flex-1">{part.word}</span>
-                      <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="flex items-center justify-between gap-1 sm:gap-2 w-full">
+                      <span className="font-medium flex-1 truncate text-xs sm:text-sm md:text-base">{part.word}</span>
+                      <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
                         {(isCurrentPhraseVerified || isCorrectSlot) && (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         )}
                         {isIncorrectSlot && (
-                          <X className="w-4 h-4 text-red-600" />
+                          <X className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
                         )}
                         {!isCurrentPhraseVerified && !currentValidation && (
                           <button
@@ -484,16 +494,16 @@ const ProgressivePhrases = ({
                               e.stopPropagation();
                               removeWord(part.slotIndex);
                             }}
-                            className="p-1 hover:bg-red-100 rounded transition-colors group"
+                            className="p-0.5 sm:p-1 hover:bg-red-100 rounded transition-colors group"
                           >
-                            <X className="w-3.5 h-3.5 text-red-500 group-hover:text-red-700" />
+                            <X className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-red-500 group-hover:text-red-700" />
                           </button>
                         )}
                       </div>
                     </span>
                   ) : (
-                    <span className="text-gray-400 text-center block w-full font-medium">
-                      {part.slotIndex}
+                    <span className="text-gray-400 text-center block w-full font-medium text-xs sm:text-sm md:text-base">
+                      {isClickable ? '✨' : part.slotIndex}
                     </span>
                   )}
                 </span>
@@ -503,30 +513,30 @@ const ProgressivePhrases = ({
         </div>
       </div>
 
-      {/* Medium Word Bank */}
+      {/* Word Bank - Responsive */}
       {!isCurrentPhraseVerified && availableWords.length > 0 && (
-        <div className={`bg-gradient-to-br ${getSectionBgColor()} rounded-xl p-5 border ${getSectionBorderColor()} shadow-sm`}>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className={`text-base font-bold text-gray-800 flex items-center gap-2 ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
-              <Sparkles className="w-5 h-5" />
+        <div className={`bg-gradient-to-br ${getSectionBgColor()} rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-5 border ${getSectionBorderColor()} shadow-sm`}>
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <h4 className={`text-sm sm:text-base font-bold text-gray-800 flex items-center gap-2 ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
               {showArabic ? 'بنك الكلمات' : 'Banque de mots'}
             </h4>
-            <span className={`text-sm font-medium px-3 py-1 rounded-full bg-${isIntroduction ? 'blue' : isDevelopment ? 'emerald' : 'purple'}-100 text-${isIntroduction ? 'blue' : isDevelopment ? 'emerald' : 'purple'}-600`}>
+            <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full bg-${sectionColor}-100 text-${sectionColor}-600`}>
               {availableWords.length}
             </span>
           </div>
           
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {availableWords.map((word, index) => (
               <button
                 key={`${word}-${index}`}
                 onClick={() => handleWordClick(word)}
                 className={`
-                  px-4 py-2.5 bg-gradient-to-r text-white rounded-xl 
-                  transition-all duration-300 select-none font-medium shadow-md
+                  px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r text-white rounded-lg sm:rounded-xl 
+                  transition-all duration-300 select-none font-medium shadow-md text-xs sm:text-sm
                   hover:shadow-lg hover:scale-105 active:scale-95
                   ${selectedWord === word 
-                    ? 'from-yellow-500 to-amber-500 ring-3 ring-yellow-300 scale-105' 
+                    ? 'from-yellow-500 to-amber-500 ring-2 sm:ring-3 ring-yellow-300 scale-105' 
                     : `${isIntroduction ? 'from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600' : isDevelopment ? 'from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600' : 'from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600'}`
                   }
                 `}
@@ -538,46 +548,47 @@ const ProgressivePhrases = ({
         </div>
       )}
 
-      {/* Verify Button - Medium */}
+      {/* Verify Button - Responsive */}
       {!isCurrentPhraseVerified && isPhraseComplete && !currentValidation && (
         <div className="flex justify-center">
           <button
             onClick={handleVerifyPhrase}
-            className={`flex items-center gap-2 px-8 py-3 bg-gradient-to-r ${getSectionColor()} text-white rounded-xl hover:shadow-xl transition-all transform hover:scale-105 font-bold`}
+            className={`flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r ${getSectionColor()} text-white rounded-lg sm:rounded-xl hover:shadow-xl transition-all transform hover:scale-105 font-bold text-sm sm:text-base`}
           >
-            <CheckCircle className="w-5 h-5" />
-            {showArabic ? 'تحقق من الجملة' : 'Vérifier la phrase'}
+            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">{showArabic ? 'تحقق من الجملة' : 'Vérifier la phrase'}</span>
+            <span className="sm:hidden">{showArabic ? 'تحقق' : 'Vérifier'}</span>
           </button>
         </div>
       )}
 
-      {/* Try Again Button - Medium */}
+      {/* Try Again Button - Responsive */}
       {currentValidation && !currentValidation.isCorrect && (
         <div className="flex justify-center">
           <button
             onClick={handleTryAgain}
-            className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${getSectionColor()} text-white rounded-xl hover:shadow-xl transition-all transform hover:scale-105 font-semibold`}
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r ${getSectionColor()} text-white rounded-lg sm:rounded-xl hover:shadow-xl transition-all transform hover:scale-105 font-semibold text-sm sm:text-base`}
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
             {showArabic ? 'حاول مرة أخرى' : 'Réessayer'}
           </button>
         </div>
       )}
 
-      {/* Validation Result - Medium */}
+      {/* Validation Result - Responsive */}
       {checkedAnswers[`${question.id}-phrase-${currentPhraseIndex}`] && (
-        <div className={`border-2 rounded-xl p-4 ${
+        <div className={`border-2 rounded-lg sm:rounded-xl p-3 sm:p-4 ${
           checkedAnswers[`${question.id}-phrase-${currentPhraseIndex}`].isCorrect
             ? 'bg-green-50 border-green-200'
             : 'bg-red-50 border-red-200'
         }`}>
           <div className="flex items-center gap-2">
             {checkedAnswers[`${question.id}-phrase-${currentPhraseIndex}`].isCorrect ? (
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
             ) : (
-              <AlertCircle className="w-5 h-5 text-red-600" />
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
             )}
-            <span className={`font-medium ${
+            <span className={`font-medium text-xs sm:text-sm ${
               checkedAnswers[`${question.id}-phrase-${currentPhraseIndex}`].isCorrect
                 ? 'text-green-800'
                 : 'text-red-800'
@@ -588,22 +599,22 @@ const ProgressivePhrases = ({
         </div>
       )}
 
-      {/* Complete Answer Display - With Arabic */}
+      {/* Complete Answer Display - Responsive */}
       {showFinalAnswer && (question.answer || question.answerArabic) && (
-        <div className="border-t pt-4">
-          <div className="flex items-center gap-2">
+        <div className="border-t pt-3 sm:pt-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <button
               onClick={() => {
                 setShowAnswer(!showAnswer);
                 if (showAnswer) stopSpeaking();
               }}
-              className={`flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${getSectionColor()} text-white rounded-xl hover:shadow-lg transition-all`}
+              className={`flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r ${getSectionColor()} text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all text-sm sm:text-base`}
             >
-              {showAnswer ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showAnswer ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
               <span className="font-semibold">
                 {showAnswer 
-                  ? (showArabic ? 'إخفاء الإجابة' : 'Masquer la réponse')
-                  : (showArabic ? 'عرض الإجابة' : 'Afficher la réponse')
+                  ? (showArabic ? 'إخفاء' : 'Masquer')
+                  : (showArabic ? 'عرض الإجابة' : 'Afficher')
                 }
               </span>
             </button>
@@ -611,13 +622,13 @@ const ProgressivePhrases = ({
             {showAnswer && question.answer && (
               <button
                 onClick={() => speakText(question.answer)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all shadow-md ${
+                className={`flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all shadow-md text-sm sm:text-base ${
                   isSpeaking 
                     ? 'bg-gradient-to-r from-red-500 to-pink-500' 
                     : 'bg-gradient-to-r from-blue-500 to-cyan-500'
                 } text-white`}
               >
-                {isSpeaking ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                {isSpeaking ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
                 <span className="font-semibold">
                   {isSpeaking ? (showArabic ? 'إيقاف' : 'Stop') : (showArabic ? 'استمع' : 'Écouter')}
                 </span>
@@ -626,36 +637,36 @@ const ProgressivePhrases = ({
           </div>
 
           {showAnswer && (
-            <div className={`mt-4 p-5 bg-gradient-to-br ${getSectionBgColor()} border ${getSectionBorderColor()} rounded-xl shadow-md`}>
+            <div className={`mt-3 sm:mt-4 p-4 sm:p-5 bg-gradient-to-br ${getSectionBgColor()} border ${getSectionBorderColor()} rounded-lg sm:rounded-xl shadow-md`}>
               <div className="flex items-center gap-2 mb-3">
-                <CheckCircle className="w-5 h-5" />
-                <h4 className={`font-bold text-gray-900 ${showArabic ? 'text-right' : 'text-left'}`}>
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                <h4 className={`font-bold text-gray-900 text-sm sm:text-base ${showArabic ? 'text-right' : 'text-left'}`}>
                   {showArabic ? 'الإجابة الكاملة' : 'Réponse complète'}
                 </h4>
               </div>
               
               {!showArabic && question.answer && (
-                <div className="mb-3 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  <p className="text-gray-800 leading-relaxed">
+                <div className="mb-3 p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
                     {question.answer}
                   </p>
                 </div>
               )}
               
               {showArabic && question.answerArabic && (
-                <div className="p-4 bg-white rounded-lg border border-gray-200 text-right shadow-sm" dir="rtl">
-                  <p className="text-gray-800 leading-relaxed">
+                <div className="p-3 sm:p-4 bg-white rounded-lg border border-gray-200 text-right shadow-sm" dir="rtl">
+                  <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
                     {question.answerArabic}
                   </p>
                 </div>
               )}
 
               {!showArabic && question.answerArabic && (
-                <div className="mt-3 p-4 bg-white rounded-lg border border-gray-200 text-right shadow-sm" dir="rtl">
-                  <p className="text-sm font-medium text-gray-700 mb-2 text-left" dir="ltr">
+                <div className="mt-3 p-3 sm:p-4 bg-white rounded-lg border border-gray-200 text-right shadow-sm" dir="rtl">
+                  <p className="text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left" dir="ltr">
                     Version arabe :
                   </p>
-                  <p className="text-gray-800 leading-relaxed">
+                  <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
                     {question.answerArabic}
                   </p>
                 </div>
@@ -665,38 +676,38 @@ const ProgressivePhrases = ({
         </div>
       )}
 
-     {/* Vocabulary Helper */}
+      {/* Vocabulary Helper - Responsive */}
       {currentPhrase.helper && (
-        <div className="border-t-2 border-gray-200 pt-6">
+        <div className="border-t-2 border-gray-200 pt-3 sm:pt-4 md:pt-6">
           <button
             onClick={() => toggleHelper && toggleHelper(`${question.id}-phrase-${currentPhraseIndex}`)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg"
+            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg text-sm sm:text-base"
           >
-            <HelpCircle className="w-5 h-5" />
+            <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="font-semibold">
               {showArabic ? 'مساعدة المفردات' : 'Aide vocabulaire'}
             </span>
-            {showHelper && showHelper[`${question.id}-phrase-${currentPhraseIndex}`] ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            {showHelper && showHelper[`${question.id}-phrase-${currentPhraseIndex}`] ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
           
           {showHelper && showHelper[`${question.id}-phrase-${currentPhraseIndex}`] && (
-            <div className="mt-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg animate-fadeIn">
-              <h4 className={`font-bold text-blue-900 mb-4 flex items-center gap-2 text-lg ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
-                <Sparkles className="w-5 h-5" />
+            <div className="mt-3 sm:mt-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border-2 border-blue-200 shadow-lg animate-fadeIn">
+              <h4 className={`font-bold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base md:text-lg ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                 {showArabic ? 'مفردات مفيدة' : 'Vocabulaire utile'}
               </h4>
               
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {currentPhrase.helper.french && currentPhrase.helper.french.map((frenchWord, idx) => {
                   const arabicWord = currentPhrase.helper.arabic?.[idx] || '';
                   return (
-                    <div key={idx} className={`flex items-center gap-3 p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-all hover:shadow-md ${showArabic ? 'flex-row-reverse' : ''}`}>
-                      <span className="px-3 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-sm font-semibold min-w-0 flex-1 text-center shadow-sm">
-                        {frenchWord}
+                    <div key={idx} className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-all hover:shadow-md ${showArabic ? 'flex-row-reverse' : ''}`}>
+                      <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0">
+                        <span className="block truncate">{frenchWord}</span>
                       </span>
-                      <span className="text-blue-600 font-bold text-lg">↔</span>
-                      <span className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-sm font-semibold min-w-0 flex-1 text-center shadow-sm" dir="rtl">
-                        {arabicWord}
+                      <span className="text-blue-600 font-bold text-sm sm:text-base md:text-lg flex-shrink-0">↔</span>
+                      <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0" dir="rtl">
+                        <span className="block truncate">{arabicWord}</span>
                       </span>
                     </div>
                   );
@@ -727,113 +738,6 @@ const ProgressivePhrases = ({
           animation: fadeIn 0.3s ease-out;
         }
       `}</style>
-    </div>
-  );
-};
-
-// Mock data for demonstration
-const mockQuestion = {
-  id: 1,
-  type: 'essay_introduction',
-  progressivePhrases: [
-    {
-      template: "Le texte [0] traite de [1] dans l'œuvre [2].",
-      words: ["narratif", "la condamnation", "Le Dernier Jour d'un Condamné"],
-      helper: {
-        french: ["narratif", "traite", "condamnation"],
-        arabic: ["سردي", "يتناول", "الإدانة"]
-      }
-    },
-    {
-      template: "L'auteur [0] une critique [1] de la peine de mort.",
-      words: ["présente", "virulente"],
-      helper: {
-        french: ["présente", "virulente", "peine de mort"],
-        arabic: ["يقدم", "قاسية", "عقوبة الإعدام"]
-      }
-    },
-    {
-      template: "Cette œuvre [0] les droits de l'homme et [1] l'injustice.",
-      words: ["défend", "dénonce"],
-      helper: {
-        french: ["défend", "dénonce", "injustice"],
-        arabic: ["يدافع عن", "يندد", "الظلم"]
-      }
-    },
-    {
-      template: "Victor Hugo [0] profondément le lecteur par son [1] humaniste.",
-      words: ["touche", "message"],
-      helper: {
-        french: ["touche", "message", "humaniste"],
-        arabic: ["يؤثر", "رسالة", "إنساني"]
-      }
-    }
-  ],
-  answer: "Le texte narratif traite de la condamnation dans l'œuvre Le Dernier Jour d'un Condamné. L'auteur présente une critique virulente de la peine de mort. Cette œuvre défend les droits de l'homme et dénonce l'injustice. Victor Hugo touche profondément le lecteur par son message humaniste.",
-  answerArabic: "النص السردي يتناول الإدانة في عمل اليوم الأخير لمحكوم عليه بالإعدام. يقدم المؤلف نقدًا قاسيًا لعقوبة الإعدام. يدافع هذا العمل عن حقوق الإنسان ويندد بالظلم. يؤثر فيكتور هوغو بعمق على القارئ برسالته الإنسانية."
-};
-
-// Demo component
-const App = () => {
-  const [currentAnswer, setCurrentAnswer] = useState({});
-  const [showHelper, setShowHelper] = useState({});
-  const [checkedAnswers, setCheckedAnswers] = useState({});
-  const [showArabic, setShowArabic] = useState(false);
-
-  const handleAnswerChange = (questionId, answer) => {
-    setCurrentAnswer(answer);
-  };
-
-  const toggleHelper = (helperId) => {
-    setShowHelper(prev => ({
-      ...prev,
-      [helperId]: !prev[helperId]
-    }));
-  };
-
-  const handleCheckAnswer = (key, validation) => {
-    setCheckedAnswers(prev => ({
-      ...prev,
-      [key]: validation
-    }));
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Exercice d'Introduction
-            </h1>
-            <button
-              onClick={() => setShowArabic(!showArabic)}
-              className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors font-medium text-sm"
-            >
-              {showArabic ? 'Français' : 'العربية'}
-            </button>
-          </div>
-          <p className="text-gray-600 text-sm">
-            Complétez les phrases progressivement pour construire une introduction complète
-          </p>
-        </div>
-
-        <ProgressivePhrases
-          question={mockQuestion}
-          showArabic={showArabic}
-          currentAnswer={currentAnswer}
-          onAnswerChange={handleAnswerChange}
-          showHelper={showHelper}
-          toggleHelper={toggleHelper}
-          checkedAnswers={checkedAnswers}
-          onCheckAnswer={handleCheckAnswer}
-          isIntroduction={true}
-          isDevelopment={false}
-          isConclusion={false}
-          getColorClasses={() => 'from-indigo-100 to-blue-50 border-blue-500 text-blue-800'}
-          getIcon={() => null}
-        />
-      </div>
     </div>
   );
 };
