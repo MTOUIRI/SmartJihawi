@@ -89,7 +89,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        // Allow localhost for development and production domain for HTTPS
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000",
+            "https://smartbac.com",
+            "https://www.smartbac.com"
+        ));
         // IMPORTANT: Add PATCH method for verify-payment endpoint
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

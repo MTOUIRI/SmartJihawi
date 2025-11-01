@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
-@CrossOrigin(origins = "http://localhost:3000")
 @Validated
 public class QuestionController {
     

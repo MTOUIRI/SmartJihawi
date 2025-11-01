@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/qcm")
-@CrossOrigin(origins = "http://localhost:3000")
 @Validated
 public class QCMQuestionController {
     
