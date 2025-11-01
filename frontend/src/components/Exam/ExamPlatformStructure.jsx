@@ -48,28 +48,28 @@ const ExamPlatformStructure = ({
             {/* User Authentication Area - Responsive */}
             <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               {user ? (
-                // User is logged in - Responsive layout
-                <div className="flex items-center gap-2 sm:gap-3">
-                  {/* User Info - Compact on mobile */}
-                  <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full shadow-md flex-shrink-0">
-                      {user.role === 'admin' ? (
-                        <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
-                      ) : (
-                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
-                      )}
-                    </div>
-                    {/* Hide name on very small screens */}
-                    <div className="text-left hidden xs:block">
-                      <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight truncate max-w-[80px] sm:max-w-[120px]">
-                        {user.name}
-                      </p>
-                      <p className="text-[10px] sm:text-xs text-gray-500 capitalize flex items-center gap-1 leading-tight">
-                        {user.role === 'admin' && <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-full"></span>}
-                        <span className="truncate">{user.role}</span>
-                      </p>
-                    </div>
-                  </div>
+  // User is logged in - Responsive layout
+  <div className="flex items-center gap-2 sm:gap-3">
+    {/* User Info - Always show name */}
+    <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full shadow-md flex-shrink-0">
+        {user.role === 'admin' ? (
+          <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
+        ) : (
+          <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
+        )}
+      </div>
+      {/* Always show user name */}
+      <div className="text-left">
+        <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight truncate max-w-[70px] sm:max-w-[100px] md:max-w-[150px]">
+          {user.name}
+        </p>
+        <p className="text-[10px] sm:text-xs text-gray-500 capitalize flex items-center gap-1 leading-tight">
+          {user.role === 'admin' && <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-full"></span>}
+          <span className="truncate">{user.role}</span>
+        </p>
+      </div>
+    </div>
 
                   {/* Logout Button - Icon only on small screens */}
                   <button

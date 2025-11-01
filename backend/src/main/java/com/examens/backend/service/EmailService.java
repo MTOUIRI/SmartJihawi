@@ -31,7 +31,7 @@ public class EmailService {
 
             helper.setFrom(fromEmail, fromName);
             helper.setTo(toEmail);
-            helper.setSubject("✅ Votre compte SmartJihawi a été activé !");
+            helper.setSubject("✅ Votre compte SmartBac a été activé !");
 
             String htmlContent = buildPaymentConfirmationEmail(studentName);
             helper.setText(htmlContent, true);
@@ -51,7 +51,7 @@ public class EmailService {
 
             helper.setFrom(fromEmail, fromName);
             helper.setTo(toEmail);
-            helper.setSubject("🎓 Bienvenue sur SmartJihawi Platform");
+            helper.setSubject("🎓 Bienvenue sur SmartBac Platform");
 
             String htmlContent = buildWelcomeEmail(studentName);
             helper.setText(htmlContent, true);
@@ -90,7 +90,7 @@ public class EmailService {
                 "<div class='header'>" +
                 "<div class='success-icon'>✅</div>" +
                 "<h1>Paiement Vérifié !</h1>" +
-                "<p style='margin: 10px 0 0 0; font-size: 16px;'>Bienvenue sur SmartJihawi Platform</p>" +
+                "<p style='margin: 10px 0 0 0; font-size: 16px;'>Bienvenue sur SmartBac Platform</p>" +
                 "</div>" +
                 "<div class='content'>" +
                 "<p>Bonjour <strong>" + studentName + "</strong>,</p>" +
@@ -115,10 +115,10 @@ public class EmailService {
                 "</div>" +
                 "<p>Si vous avez des questions ou besoin d'aide, n'hésitez pas à nous contacter via WhatsApp au <strong>+212 690 002 573</strong>.</p>" +
                 "<p>Bonne chance dans votre préparation ! 💪</p>" +
-                "<p style='margin-top: 30px;'>Cordialement,<br><strong>L'équipe SmartJihawi</strong></p>" +
+                "<p style='margin-top: 30px;'>Cordialement,<br><strong>L'équipe SmartBac</strong></p>" +
                 "</div>" +
                 "<div class='footer'>" +
-                "<p>© 2025 SmartJihawi Platform - Tous droits réservés</p>" +
+                "<p>© 2025 SmartBac Platform - Tous droits réservés</p>" +
                 "<p style='font-size: 12px; margin-top: 10px;'>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>" +
                 "</div>" +
                 "</div>" +
@@ -153,7 +153,7 @@ public class EmailService {
                 "</div>" +
                 "<div class='content'>" +
                 "<p>Bonjour <strong>" + studentName + "</strong>,</p>" +
-                "<p>Merci de votre inscription sur <strong>SmartJihawi Platform</strong> !</p>" +
+                "<p>Merci de votre inscription sur <strong>SmartBac Platform</strong> !</p>" +
                 "<div class='warning-box'>" +
                 "<strong>⏳ Compte en attente d'activation</strong><br>" +
                 "Votre compte sera activé dès que nous aurons vérifié votre paiement. Cela prend généralement moins de 24 heures." +
@@ -166,10 +166,10 @@ public class EmailService {
                 "</ol>" +
                 "<p>Si vous avez des questions, contactez-nous sur WhatsApp au <strong>+212 690 002 573</strong>.</p>" +
                 "<p>À très bientôt sur la plateforme ! 🚀</p>" +
-                "<p style='margin-top: 30px;'>Cordialement,<br><strong>L'équipe SmartJihawi</strong></p>" +
+                "<p style='margin-top: 30px;'>Cordialement,<br><strong>L'équipe SmartBac</strong></p>" +
                 "</div>" +
                 "<div class='footer'>" +
-                "<p>© 2025 SmartJihawi Platform - Tous droits réservés</p>" +
+                "<p>© 2025 SmartBac Platform - Tous droits réservés</p>" +
                 "</div>" +
                 "</div>" +
                 "</body>" +

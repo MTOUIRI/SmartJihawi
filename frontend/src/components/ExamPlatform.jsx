@@ -7,6 +7,7 @@ import { QCMViewer, QCMChapterList } from './Content/QCM/QCMViewer';
 import { ExamComponentWrapper, initializeExamRegistry } from './Exam/examRegistry';
 import ProductionEcriteCards from './Content/Essay/ProductionEcriteCards';
 import RegistrationModal from './Registration/RegistrationModal';
+import useDocumentTitle from './Hooks/useDocumentTitle';
 import { 
   books, 
   getAllBooks, 
@@ -216,6 +217,57 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
   
   // Registration modal state
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+
+  // Dynamic page title based on current view and context
+const getPageTitle = () => {
+  const bookData = getBookById(currentBook);
+  const bookTitle = bookData ? bookData.title : '';
+
+  switch (currentView) {
+    case VIEWS.BOOKS:
+      return 'Bibliothèque';
+    
+    case VIEWS.BOOK_CONTENT:
+      return bookTitle;
+    
+    case VIEWS.CHAPTERS:
+      return `Chapitres - ${bookTitle}`;
+    
+    case VIEWS.QCM_CHAPTERS:
+      return `QCM - ${bookTitle}`;
+    
+    case VIEWS.QCM_VIEWER:
+      if (selectedChapter) {
+        return `QCM: ${selectedChapter.title} - ${bookTitle}`;
+      }
+      return `QCM - ${bookTitle}`;
+    
+    case VIEWS.ESSAY_PRACTICE:
+      return `Production Écrite - ${bookTitle}`;
+    
+    case VIEWS.YEARS:
+      return `Examens - ${bookTitle}`;
+    
+    case VIEWS.EXAMS:
+      if (selectedYear) {
+        // Fix: Access the year property from the selectedYear object
+        return `Examens ${selectedYear.year} - ${bookTitle}`;
+      }
+      return `Examens - ${bookTitle}`;
+    
+    case VIEWS.EXAM:
+      if (selectedExam) {
+        return `${selectedExam.title || 'Examen'} - ${bookTitle}`;
+      }
+      return `Examen - ${bookTitle}`;
+    
+    default:
+      return 'Plateforme d\'Apprentissage';
+  }
+};
+
+  // Set dynamic page title
+  useDocumentTitle(getPageTitle());
 
   const initializePlatform = useCallback(async () => {
     if (initialized) return;
@@ -518,7 +570,7 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
                             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                            <span>Accès complet pour seulement 200 DH/an</span>
+                            <span><strong>200 DH/an</strong> • Accès illimité à tous les contenus</span>
                           </div>
                           <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
                             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />

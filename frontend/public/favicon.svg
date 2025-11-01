@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Vibrant gradients -->
+  <defs>
+    <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0099ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0066ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tasselGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffaa00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Large, bold graduation cap - NO BACKGROUND -->
+  <!-- Cap top (square/diamond) - maximized size -->
+  <path d="M16 3 L30 9.5 L16 16 L2 9.5 Z" fill="url(#capGrad)" stroke="#0055cc" stroke-width="0.5"/>
+  
+  <!-- Cap bottom with depth -->
+  <path d="M5 10.5 L5 19 L16 24.5 L27 19 L27 10.5 L16 16 Z" fill="url(#capGrad)" opacity="0.95"/>
+  
+  <!-- White highlight for depth -->
+  <path d="M16 3 L30 9.5 L16 16 Z" fill="url(#capGrad)" opacity="0.3"/>
+  
+  <!-- Bold tassel with gradient -->
+  <line x1="30" y1="9.5" x2="30" y2="22" stroke="url(#tasselGrad)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="30" cy="24" r="2.5" fill="url(#tasselGrad)"/>
+  
+  <!-- Sparkle effects for creative feel -->
+  <circle cx="8" cy="6" r="1.5" fill="#00d4ff" opacity="0.8"/>
+  <circle cx="24" cy="6" r="1.2" fill="#00d4ff" opacity="0.7"/>
+</svg>
