@@ -79,7 +79,7 @@ const LoginPage = ({ onLogin }) => {
             <BookOpen className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            SmartJihawi Platform
+            SmartBac Platform
           </h1>
           <p className="text-gray-600">
             Tableau de bord administrateur
