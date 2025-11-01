@@ -58,9 +58,22 @@ const SingleWordPlacement = ({
 
   const template = question.dragDropWords.template;
   
-  const handleWordClick = (word) => {
+ const handleWordClick = (word) => {
     if (isVerified) return;
     setSelectedWord(word);
+    // Speak the word when selected
+    speakWord(word);
+  };
+
+  const speakWord = (word) => {
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+    
+    window.speechSynthesis.speak(utterance);
   };
 
   const handleSlotClick = (slotIndex) => {
@@ -335,20 +348,6 @@ const SingleWordPlacement = ({
           </div>
         )}
       </div>
-
-      {/* Instruction Banner */}
-      {selectedWord && !isVerified && (
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg text-white animate-fadeIn">
-          <p className="text-center text-xs sm:text-base font-semibold flex items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-            <span className="truncate">
-              {showArabic 
-                ? `"${selectedWord}" - انقر على الفراغ` 
-                : `"${selectedWord}" - Cliquez sur un espace`}
-            </span>
-          </p>
-        </div>
-      )}
 
       {/* Main Template Area with Clickable Slots */}
       <div className={`bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8 shadow-md ${showArabic ? 'text-right' : 'text-left'}`}>

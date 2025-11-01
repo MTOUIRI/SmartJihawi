@@ -44,7 +44,7 @@ const SingleChoiceQuestion = ({
   return (
     <div>
       {hasMultipleAnswers && (
-        <p className="text-xs sm:text-sm text-blue-600 mb-2 sm:mb-3 font-medium px-1">
+        <p className={`text-xs sm:text-sm text-blue-600 mb-2 sm:mb-3 font-medium px-1 ${showArabic ? 'text-right' : 'text-left'}`} dir={showArabic ? 'rtl' : 'ltr'}>
           ⚠️ {showArabic ? 'عدة إجابات صحيحة - اختر جميع الإجابات الصحيحة' : 'Plusieurs réponses correctes - Sélectionnez toutes les bonnes réponses'}
         </p>
       )}
@@ -65,8 +65,11 @@ const SingleChoiceQuestion = ({
               disabled={showAnswers[question.id]}
               className="text-blue-500 flex-shrink-0"
             />
-            <span className={`flex-1 text-sm sm:text-base ${showAnswers[question.id] && isCorrectAnswer(option.id) ? 'font-bold text-green-700' : 'text-gray-700'} ${showArabic ? 'text-right' : 'text-left'}`}>
-              {option.id}) {showArabic && option.textArabic ? option.textArabic : option.text}
+            <span 
+              className={`flex-1 text-sm sm:text-base ${showAnswers[question.id] && isCorrectAnswer(option.id) ? 'font-bold text-green-700' : 'text-gray-700'} ${showArabic ? 'text-right' : 'text-left'}`}
+              dir={showArabic ? 'rtl' : 'ltr'}
+            >
+              <span dir="ltr" className="inline-block">{option.id})</span> {showArabic && option.textArabic ? option.textArabic : option.text}
             </span>
             {showAnswers[question.id] && isCorrectAnswer(option.id) && (
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
@@ -85,4 +88,5 @@ const SingleChoiceQuestion = ({
     </div>
   );
 };
+
 export default SingleChoiceQuestion;

@@ -53,9 +53,22 @@ const ProgressivePhrases = ({
     stopSpeaking();
   }, [question.id]);
 
-  const handleWordClick = (word) => {
+const handleWordClick = (word) => {
     if (verifiedPhrases.has(currentPhraseIndex)) return;
     setSelectedWord(word);
+    // Speak the word when selected
+    speakWord(word);
+  };
+
+  const speakWord = (word) => {
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+    
+    window.speechSynthesis.speak(utterance);
   };
 
   const handleSlotClick = (slotIndex) => {

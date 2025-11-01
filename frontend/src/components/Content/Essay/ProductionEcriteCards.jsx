@@ -262,7 +262,7 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
   };
 
   const handleEssayGroupClick = (essayGroup, index) => {
-    const locked = isItemLocked(index, user, 1);
+    const locked = isItemLocked(index, user, 2);
     if (locked) {
       if (onShowRegistration) {
         onShowRegistration();
@@ -347,7 +347,7 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
                         examYear={essayGroup.examYear}
                         onClick={() => handleEssayGroupClick(essayGroup, index)}
                         showArabic={showArabic}
-                        isLocked={isItemLocked(index, user, 1)}
+                        isLocked={isItemLocked(index, user, 2)}
                         onShowRegistration={onShowRegistration}
                         index={index}
                       />

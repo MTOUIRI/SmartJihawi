@@ -20,11 +20,14 @@ const MultipleChoiceQuestion = ({
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all"
           >
             {/* Question Text */}
-            <div className={`flex items-start gap-2 flex-1 ${showArabic ? 'flex-row-reverse text-right' : ''}`}>
+            <div className={`flex items-start gap-2 flex-1 ${showArabic ? 'flex-row-reverse' : ''}`}>
               <span className="font-bold text-blue-600 text-sm sm:text-base flex-shrink-0" dir="ltr">
                 {String.fromCharCode(97 + idx)})
               </span>
-              <span className="text-gray-700 flex-1 text-sm sm:text-base leading-relaxed">
+              <span 
+                className={`text-gray-700 flex-1 text-sm sm:text-base leading-relaxed ${showArabic ? 'text-right' : 'text-left'}`}
+                dir={showArabic ? 'rtl' : 'ltr'}
+              >
                 {showArabic && subQ.questionArabic ? subQ.questionArabic : subQ.question}
               </span>
             </div>
@@ -35,18 +38,20 @@ const MultipleChoiceQuestion = ({
                 subQ.answer === 'VRAI' || subQ.answer === 'صحيح' 
                   ? 'bg-green-100 text-green-700 border-2 border-green-300' 
                   : 'bg-red-100 text-red-700 border-2 border-red-300'
-              } ${showArabic ? 'sm:mr-0' : 'sm:ml-0'}`}>
+              } ${showArabic ? 'flex-row-reverse sm:mr-0' : 'sm:ml-0'}`}>
                 {subQ.answer === 'VRAI' || subQ.answer === 'صحيح' ? (
                   <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                 ) : (
                   <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
-                <span>{showArabic && subQ.answerArabic ? subQ.answerArabic : subQ.answer}</span>
+                <span dir={showArabic ? 'rtl' : 'ltr'}>
+                  {showArabic && subQ.answerArabic ? subQ.answerArabic : subQ.answer}
+                </span>
               </div>
             ) : (
               <div className={`flex gap-3 sm:gap-4 ${showArabic ? 'flex-row-reverse sm:mr-0' : 'sm:ml-0'}`}>
                 {/* VRAI / صحيح Button */}
-                <label className="flex items-center gap-2 cursor-pointer group">
+                <label className={`flex items-center gap-2 cursor-pointer group ${showArabic ? 'flex-row-reverse' : ''}`}>
                   <div className="relative">
                     <input
                       type="radio"
@@ -61,13 +66,16 @@ const MultipleChoiceQuestion = ({
                       className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 focus:ring-2 focus:ring-green-400 cursor-pointer"
                     />
                   </div>
-                  <span className="text-green-600 font-semibold group-hover:text-green-700 transition-colors text-sm sm:text-base">
+                  <span 
+                    className="text-green-600 font-semibold group-hover:text-green-700 transition-colors text-sm sm:text-base"
+                    dir={showArabic ? 'rtl' : 'ltr'}
+                  >
                     {showArabic ? 'صحيح' : 'VRAI'}
                   </span>
                 </label>
 
                 {/* FAUX / خطأ Button */}
-                <label className="flex items-center gap-2 cursor-pointer group">
+                <label className={`flex items-center gap-2 cursor-pointer group ${showArabic ? 'flex-row-reverse' : ''}`}>
                   <div className="relative">
                     <input
                       type="radio"
@@ -82,7 +90,10 @@ const MultipleChoiceQuestion = ({
                       className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 focus:ring-2 focus:ring-red-400 cursor-pointer"
                     />
                   </div>
-                  <span className="text-red-600 font-semibold group-hover:text-red-700 transition-colors text-sm sm:text-base">
+                  <span 
+                    className="text-red-600 font-semibold group-hover:text-red-700 transition-colors text-sm sm:text-base"
+                    dir={showArabic ? 'rtl' : 'ltr'}
+                  >
                     {showArabic ? 'خطأ' : 'FAUX'}
                   </span>
                 </label>

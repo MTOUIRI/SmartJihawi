@@ -121,24 +121,24 @@ class ErrorBoundary extends React.Component {
 }
 
 const LoadingSpinner = ({ message = 'Chargement...' }) => (
-  <div className="flex flex-col items-center justify-center py-12">
-    <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
-    <p className="text-gray-600 font-medium">{message}</p>
+  <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+    <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 animate-spin mb-3 sm:mb-4" />
+    <p className="text-gray-600 font-medium text-sm sm:text-base">{message}</p>
   </div>
 );
 
 const ErrorAlert = ({ message, onRetry }) => (
-  <div className="max-w-2xl mx-auto mb-6">
-    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-      <div className="flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+  <div className="max-w-2xl mx-auto mb-4 sm:mb-6">
+    <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+      <div className="flex items-start gap-2 sm:gap-3">
+        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <h3 className="text-red-800 font-semibold mb-1">Erreur de chargement</h3>
-          <p className="text-red-700 text-sm">{message}</p>
+          <h3 className="text-red-800 font-semibold mb-1 text-sm sm:text-base">Erreur de chargement</h3>
+          <p className="text-red-700 text-xs sm:text-sm">{message}</p>
           {onRetry && (
             <button
               onClick={onRetry}
-              className="mt-3 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-800 rounded-md text-sm font-medium transition-colors"
+              className="mt-2 sm:mt-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-red-100 hover:bg-red-200 text-red-800 rounded-md text-xs sm:text-sm font-medium transition-colors"
             >
               Réessayer
             </button>
@@ -162,26 +162,26 @@ const ContentCard = ({ type, examCount, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-300 overflow-hidden group text-left w-full"
+      className="bg-white rounded-lg sm:rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-300 overflow-hidden group text-left w-full"
     >
-      <div className={`h-2 bg-gradient-to-r ${config.color}`} />
+      <div className={`h-1.5 sm:h-2 bg-gradient-to-r ${config.color}`} />
       
-      <div className="p-6">
-        <div className={`w-16 h-16 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md`}>
-          <Icon className="w-8 h-8 text-white" />
+      <div className="p-4 sm:p-5 md:p-6">
+        <div className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform shadow-md`}>
+          <Icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
         </div>
         
-        <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-1.5 sm:mb-2 group-hover:text-blue-600 transition-colors">
           {config.title}
         </h3>
         
-        <p className="text-gray-600 text-sm mb-4 leading-relaxed min-h-[40px]">
+        <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed min-h-[32px] sm:min-h-[40px]">
           {config.description}
         </p>
         
         <div className="flex items-center justify-between">
           {type === 'exams' && examCount !== undefined && (
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
               examCount > 0 
                 ? 'bg-green-100 text-green-800' 
                 : 'bg-gray-100 text-gray-600'
@@ -190,9 +190,9 @@ const ContentCard = ({ type, examCount, onClick }) => {
             </span>
           )}
           
-          <div className="flex items-center gap-2 text-blue-600 font-semibold ml-auto">
-            <span className="text-sm">{config.action}</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-blue-600 font-semibold ml-auto">
+            <span className="text-xs sm:text-sm">{config.action}</span>
+            <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
       </div>
@@ -363,25 +363,25 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
 
     return (
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="flex-1 p-6 md:p-8">
+        <div className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
           <div className="max-w-6xl mx-auto">
-            <header className="mb-8">
+            <header className="mb-6 sm:mb-8">
               <button
                 onClick={handleBackToBooks}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-6 font-medium"
+                className="flex items-center gap-1.5 sm:gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 sm:mb-6 font-medium text-sm sm:text-base"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 Retour à la bibliothèque
               </button>
               
               <div className="text-center">
-                <div className={`w-20 h-20 bg-gradient-to-br ${currentBookData.color} rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-xl`}>
-                  <BookOpen className="w-10 h-10 text-white" />
+                <div className={`w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br ${currentBookData.color} rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 mx-auto shadow-xl`}>
+                  <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-1.5 sm:mb-2 px-4">
                   {currentBookData.title}
                 </h1>
-                <p className="text-xl text-gray-600">par {currentBookData.author}</p>
+                <p className="text-base sm:text-lg md:text-xl text-gray-600">par {currentBookData.author}</p>
               </div>
             </header>
 
@@ -390,7 +390,7 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
 
             {!loading && !error && (
               <>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
                   <ContentCard
                     type="chapters"
                     onClick={handleShowChapters}
@@ -410,16 +410,16 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl p-6 border border-blue-100 shadow-sm">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <BookOpen className="w-6 h-6 text-white" />
+                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 border border-blue-100 shadow-sm">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-blue-900 mb-2 text-lg">
+                      <h3 className="font-bold text-blue-900 mb-1.5 sm:mb-2 text-base sm:text-lg">
                         Plateforme d'apprentissage interactive
                       </h3>
-                      <p className="text-blue-800 text-sm leading-relaxed">
+                      <p className="text-blue-800 text-xs sm:text-sm leading-relaxed">
                         Accédez à des ressources pédagogiques complètes : résumés détaillés, 
                         quiz interactifs, pratique d'expression écrite et examens officiels. 
                         {!user && (
@@ -442,13 +442,13 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
 
     return (
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="flex-1 p-6 md:p-8">
+        <div className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
           <div className="max-w-6xl mx-auto">
-            <header className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            <header className="text-center mb-8 sm:mb-10 md:mb-12 px-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
                 Choisissez un livre pour commencer
               </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 Une solution complète pour votre préparation aux examens : 
                 chapitres détaillés, QCM interactifs, pratique d'expression écrite et examens officiels
               </p>
@@ -459,10 +459,9 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
 
             {!loading && !error && (
               <>
-                {/* Books Grid */}
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-16">
+                {/* Books Grid - Responsive */}
+                <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-12 sm:mb-14 md:mb-16">
                   {allBooks.map((book) => {
-                    // Book cover images - replace these URLs with your actual book cover images
                     const bookCovers = {
                       'boite-merveilles': '/Images/boite.png',
                       'antigone': '/Images/antigone.png',
@@ -473,31 +472,30 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
                       <button
                         key={book.id}
                         onClick={() => handleBookChange(book.id)}
-                        className="relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group border border-gray-200 hover:border-gray-300 text-left overflow-hidden h-96"
+                        className="relative bg-white rounded-lg sm:rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group border border-gray-200 hover:border-gray-300 text-left overflow-hidden h-72 sm:h-80 md:h-96"
                       >
-                        {/* Book Cover Image - Full Card */}
+                        {/* Book Cover Image */}
                         <div className="absolute inset-0">
                           <img 
                             src={bookCovers[book.id]} 
                             alt={`Couverture de ${book.title}`}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
-                          {/* Gradient Overlay */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                         </div>
 
-                        {/* Card Content - Overlaid on Image */}
-                        <div className="relative h-full flex flex-col justify-end p-6 z-10">
-                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors drop-shadow-lg">
+                        {/* Card Content */}
+                        <div className="relative h-full flex flex-col justify-end p-4 sm:p-5 md:p-6 z-10">
+                          <h3 className="text-lg sm:text-xl font-bold text-white mb-1.5 sm:mb-2 group-hover:text-blue-300 transition-colors drop-shadow-lg">
                             {book.title}
                           </h3>
                           
-                          <p className="text-white/90 mb-4 text-sm drop-shadow-md">par {book.author}</p>
+                          <p className="text-white/90 mb-3 sm:mb-4 text-xs sm:text-sm drop-shadow-md">par {book.author}</p>
                           
                           <div className="flex items-center justify-end">
-                            <div className="flex items-center gap-2 text-white font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg group-hover:from-emerald-600 group-hover:to-teal-700 transition-all">
-                              <span className="text-sm">Explorer</span>
-                              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            <div className="flex items-center gap-1.5 sm:gap-2 text-white font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg shadow-lg group-hover:from-emerald-600 group-hover:to-teal-700 transition-all">
+                              <span className="text-xs sm:text-sm">Explorer</span>
+                              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                             </div>
                           </div>
                         </div>
@@ -506,38 +504,40 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
                   })}
                 </div>
 
-                {/* CTA Section - Only show for non-authenticated users */}
+                {/* CTA Section - Responsive */}
                 {!user && (
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 md:p-12 shadow-2xl mb-16">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                      <div className="flex-1 text-white">
-                        <h3 className="text-3xl font-bold mb-3">
+                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12 shadow-2xl mb-12 sm:mb-14 md:mb-16">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
+                      <div className="flex-1 text-white text-center md:text-left">
+                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3">
                           Prêt à commencer votre préparation ?
                         </h3>
-                        <p className="text-blue-100 text-lg mb-4">
-                          Rejoignez des centaines d'étudiants qui réussissent leurs examens avec SmartJihawi
+                        <p className="text-blue-100 text-sm sm:text-base md:text-lg mb-3 sm:mb-4">
+                          Rejoignez des centaines d'étudiants qui réussissent leurs examens avec SmartBac
                         </p>
-                        <div className="flex items-center gap-3 text-blue-100">
-                          <CheckCircle className="w-5 h-5" />
-                          <span>Accès complet pour seulement 200 DH/an</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-blue-100 mt-2">
-                          <CheckCircle className="w-5 h-5" />
-                          <span>Tous les livres et ressources inclus</span>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                            <span>Accès complet pour seulement 200 DH/an</span>
+                          </div>
+                          <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                            <span>Tous les livres et ressources inclus</span>
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="flex flex-col gap-3 flex-shrink-0">
+                      <div className="flex flex-col gap-3 flex-shrink-0 w-full sm:w-auto">
                         <button
                           onClick={handleShowRegistration}
-                          className="px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-xl hover:shadow-2xl flex items-center gap-2 text-lg"
+                          className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-600 font-bold rounded-lg sm:rounded-xl hover:bg-blue-50 transition-colors shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 text-base sm:text-lg"
                         >
-                          <UserPlus className="w-5 h-5" />
+                          <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                           S'inscrire maintenant
                         </button>
                         <button
                           onClick={onShowStudentLogin}
-                          className="px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm border-2 border-white/30"
+                          className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white/10 text-white font-semibold rounded-lg sm:rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm border-2 border-white/30 text-sm sm:text-base"
                         >
                           Déjà inscrit ? Se connecter
                         </button>
@@ -547,9 +547,9 @@ const ExamPlatform = ({ user, onLogout, onShowStudentLogin }) => {
                 )}
 
                 {/* Footer */}
-                <footer className="pt-8 border-t border-gray-200">
+                <footer className="pt-6 sm:pt-8 border-t border-gray-200">
                   <div className="text-center text-gray-600">
-                    <p className="text-sm mb-2">
+                    <p className="text-xs sm:text-sm mb-2">
                       © 2025 SmartJihawi. Tous droits réservés.
                     </p>
                     <p className="text-xs text-gray-500">

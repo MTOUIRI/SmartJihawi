@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Play, BookOpen, Clock, ChevronLeft, ChevronRight, Menu, X, AlertCircle, Loader2, CheckCircle, Lock } from 'lucide-react';
-import FreemiumWrapper, { isItemLocked } from '../FreemiumWrapper';
-import RegistrationModal from '../../Registration/RegistrationModal';
+import { Play, BookOpen, Clock, ChevronLeft, ChevronRight, Menu, X, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import API_URL from '../../../config';
 
 // API Configuration
@@ -74,31 +72,7 @@ const EmptyState = ({ onBack }) => (
 );
 
 // Chapter Sidebar Item Component
-const ChapterSidebarItem = ({ chapter, isActive, onClick, isLocked, onShowLogin, index }) => {
-  if (isLocked) {
-    return (
-      <div className="relative w-full text-left p-3 md:p-4 rounded-xl bg-white border-2 border-gray-100 opacity-60">
-        <div className="flex items-start gap-2 md:gap-3">
-          <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 bg-gray-100 text-gray-400">
-            {chapter.chapterNumber}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-xs md:text-sm leading-tight mb-1.5 text-gray-500 line-clamp-2">
-              {chapter.title}
-            </h3>
-            <button
-              onClick={onShowLogin}
-              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Connectez-vous pour débloquer
-            </button>
-          </div>
-          <Lock className="w-3 h-3 md:w-4 md:h-4 text-gray-400 flex-shrink-0" />
-        </div>
-      </div>
-    );
-  }
-
+const ChapterSidebarItem = ({ chapter, isActive, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -108,12 +82,6 @@ const ChapterSidebarItem = ({ chapter, isActive, onClick, isLocked, onShowLogin,
           : 'bg-white border-2 border-gray-100 hover:border-gray-200 hover:shadow-md'
       }`}
     >
-      {index === 0 && (
-        <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2 bg-green-500 text-white px-1.5 md:px-2 py-0.5 rounded-full text-xs font-bold">
-          GRATUIT
-        </div>
-      )}
-      
       <div className="flex items-start gap-2 md:gap-3">
         <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 ${
           isActive
@@ -200,7 +168,6 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   const getAuthToken = useCallback(() => {
     return localStorage.getItem('token');
@@ -254,6 +221,8 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
       }
 
       const sortedChapters = data.sort((a, b) => a.chapterNumber - b.chapterNumber);
+      console.log('Loaded chapters:', sortedChapters.length, 'chapters');
+      console.log('Chapter numbers:', sortedChapters.map(ch => ch.chapterNumber));
       setChapters(sortedChapters);
       
       if (sortedChapters.length > 0) {
@@ -268,6 +237,8 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
         }
 
         const sortedChapters = data.sort((a, b) => a.chapterNumber - b.chapterNumber);
+        console.log('Loaded chapters (authenticated):', sortedChapters.length, 'chapters');
+        console.log('Chapter numbers:', sortedChapters.map(ch => ch.chapterNumber));
         setChapters(sortedChapters);
         
         if (sortedChapters.length > 0) {
@@ -303,56 +274,27 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
     [chapterNumbers, activeChapter]
   );
 
-  const handleShowRegistration = useCallback(() => {
-    setShowRegistrationModal(true);
-  }, []);
-
-  const handleCloseRegistration = useCallback(() => {
-    setShowRegistrationModal(false);
-  }, []);
-
-  const handleRegister = useCallback((formData) => {
-    console.log('Registration data:', formData);
-    alert('Inscription réussie ! Votre compte sera activé après vérification du paiement.');
-    setShowRegistrationModal(false);
-  }, []);
-
-  const handleChapterSelect = useCallback((chapterNumber, index) => {
-    if (isItemLocked(index, user, 1)) {
-      if (onShowLogin) {
-        onShowLogin();
-      }
-      return;
-    }
-    
+  const handleChapterSelect = useCallback((chapterNumber) => {
     setActiveChapter(chapterNumber);
     setSidebarOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [user, onShowLogin]);
+  }, []);
 
   const goToPrevChapter = useCallback(() => {
     if (currentIndex > 0) {
       const prevIndex = currentIndex - 1;
-      if (!isItemLocked(prevIndex, user, 1)) {
-        setActiveChapter(chapterNumbers[prevIndex]);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      setActiveChapter(chapterNumbers[prevIndex]);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [currentIndex, chapterNumbers, user]);
+  }, [currentIndex, chapterNumbers]);
 
   const goToNextChapter = useCallback(() => {
     if (currentIndex < chapterNumbers.length - 1) {
       const nextIndex = currentIndex + 1;
-      if (isItemLocked(nextIndex, user, 1)) {
-        if (onShowLogin) {
-          onShowLogin();
-        }
-        return;
-      }
       setActiveChapter(chapterNumbers[nextIndex]);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [currentIndex, chapterNumbers, user, onShowLogin]);
+  }, [currentIndex, chapterNumbers]);
 
   if (loading) {
     return <LoadingState />;
@@ -372,244 +314,207 @@ const ChapterViewer = ({ book, onBack, user, onShowLogin }) => {
 
   const isFirstChapter = currentIndex === 0;
   const isLastChapter = currentIndex === chapterNumbers.length - 1;
-  const isCurrentLocked = isItemLocked(currentIndex, user, 1);
 
   return (
-    <>
-      <div className="flex h-screen bg-gray-50 overflow-hidden">
-        {sidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden backdrop-blur-sm"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden backdrop-blur-sm"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-        {/* Sidebar - Mobile Responsive */}
-        <aside className={`${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 fixed lg:relative z-50 w-72 md:w-80 h-screen bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out flex flex-col shadow-xl lg:shadow-none`}>
-          
-          <div className="p-4 md:p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                <div className={`w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center shadow-md flex-shrink-0`}>
-                  <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
+      {/* Sidebar - Mobile Responsive */}
+      <aside className={`${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:translate-x-0 fixed lg:relative z-50 w-72 md:w-80 h-screen bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out flex flex-col shadow-xl lg:shadow-none`}>
+        
+        <div className="p-4 md:p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+              <div className={`w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center shadow-md flex-shrink-0`}>
+                <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-sm md:text-base font-bold text-gray-900 leading-tight truncate">
+                  {book.title}
+                </h2>
+                <p className="text-xs text-gray-600 mt-0.5">
+                  {chapters.length} chapitre{chapters.length > 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-3 md:p-4">
+          <div className="space-y-2 pb-20">
+            {chapters.map((chapter) => (
+              <ChapterSidebarItem
+                key={chapter.id}
+                chapter={chapter}
+                isActive={activeChapter === chapter.chapterNumber}
+                onClick={() => handleChapterSelect(chapter.chapterNumber)}
+              />
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content - Mobile Responsive */}
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-white">
+        
+        {/* Header - Mobile Responsive */}
+        <header className="bg-white border-b border-gray-200 px-3 md:px-4 lg:px-6 py-3 md:py-4 flex items-center justify-between shadow-sm z-30">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+              aria-label="Ouvrir le menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            
+            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+              <span className="px-2 md:px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-md flex-shrink-0">
+                CH {activeChapter}
+              </span>
+              <div className="w-px h-4 bg-gray-300 flex-shrink-0 hidden sm:block"></div>
+              <h1 className="font-semibold text-xs sm:text-sm lg:text-base text-gray-900 truncate">
+                {currentChapter.title}
+              </h1>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-0.5 md:gap-1 flex-shrink-0">
+            <button
+              onClick={goToPrevChapter}
+              disabled={isFirstChapter}
+              className={`p-1.5 md:p-2 rounded-lg transition-all ${
+                isFirstChapter
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+              aria-label="Chapitre précédent"
+            >
+              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
+            <button
+              onClick={goToNextChapter}
+              disabled={isLastChapter}
+              className={`p-1.5 md:p-2 rounded-lg transition-all ${
+                isLastChapter
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+              aria-label="Chapitre suivant"
+            >
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
+          </div>
+        </header>
+
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Video Container - Fixed aspect ratio on all devices */}
+          <div className="bg-black w-full flex-shrink-0">
+            <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+              <div className="absolute inset-0">
+                <VideoPlayer
+                  videoUrl={currentChapter.videoUrl}
+                  title={`${currentChapter.title} - Chapitre ${activeChapter}`}
+                  duration={currentChapter.duration}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Content Area - Scrollable on all devices */}
+          <div className="flex-1 overflow-y-auto bg-gray-50">
+            <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
+            
+              {/* Chapter Info Card - Hidden on mobile, shown on desktop */}
+              <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
+                <div className="flex items-start gap-3 md:gap-4">
+                  <div className={`w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center text-white text-base md:text-lg font-bold flex-shrink-0 shadow-md`}>
+                    {activeChapter}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-2 leading-tight">
+                      {currentChapter.title}
+                    </h2>
+                    <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-600">
+                      <div className="flex items-center gap-1 md:gap-1.5">
+                        <Clock className="w-3 h-3 md:w-4 md:h-4" />
+                        <span className="font-medium">{currentChapter.duration}</span>
+                      </div>
+                      <span className="text-gray-300">•</span>
+                      <span>
+                        Chapitre {activeChapter} sur {chapterNumbers.length}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-sm md:text-base font-bold text-gray-900 leading-tight truncate">
-                    {book.title}
-                  </h2>
-                  <p className="text-xs text-gray-600 mt-0.5">
-                    {chapters.length} chapitre{chapters.length > 1 ? 's' : ''}
+              </div>
+
+              {/* Resume Card - Visible and scrollable */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
+                <div className="flex items-center gap-2 mb-3 md:mb-4">
+                  <div className="w-7 h-7 md:w-8 md:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600" />
+                  </div>
+                  <h3 className="text-base md:text-lg font-bold text-gray-900">Résumé du chapitre</h3>
+                </div>
+                
+                <div className="prose prose-sm md:prose-gray max-w-none">
+                  <p className="text-sm md:text-base text-gray-700 leading-relaxed text-justify whitespace-pre-line">
+                    {currentChapter.resume || 'Le résumé de ce chapitre sera bientôt disponible.'}
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="lg:hidden p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
 
-          <div className="flex-1 overflow-y-auto p-3 md:p-4">
-            <div className="space-y-2">
-              {chapters.map((chapter, index) => (
-                <ChapterSidebarItem
-                  key={chapter.id}
-                  chapter={chapter}
-                  index={index}
-                  isActive={activeChapter === chapter.chapterNumber}
-                  isLocked={isItemLocked(index, user, 1)}
-                  onClick={() => handleChapterSelect(chapter.chapterNumber, index)}
-                  onShowLogin={onShowLogin}
-                />
-              ))}
-            </div>
-            
-            {!user && chapters.length > 1 && (
-              <div className="mt-4 p-3 md:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-xs md:text-sm text-blue-900 font-semibold mb-2">
-                  🔒 {chapters.length - 1} autres chapitres
-                </p>
-                <p className="text-xs text-blue-700 mb-3">
-                  Créez un compte pour tout débloquer
-                </p>
+              {/* Navigation Buttons - Mobile Responsive */}
+              <div className="flex items-center justify-between gap-3 md:gap-4 pt-4">
                 <button
-                  onClick={handleShowRegistration}
-                  className="w-full px-3 py-2 bg-blue-600 text-white text-xs md:text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={goToPrevChapter}
+                  disabled={isFirstChapter}
+                  className={`px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all flex items-center gap-1.5 md:gap-2 text-sm md:text-base ${
+                    isFirstChapter
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-md'
+                  }`}
                 >
-                  S'inscrire 
+                  <ChevronLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Précédent</span>
+                </button>
+
+                <div className="text-xs md:text-sm text-gray-500 font-medium">
+                  {currentIndex + 1} / {chapterNumbers.length}
+                </div>
+
+                <button
+                  onClick={goToNextChapter}
+                  disabled={isLastChapter}
+                  className={`px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all flex items-center gap-1.5 md:gap-2 text-sm md:text-base ${
+                    isLastChapter
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : `bg-gradient-to-r ${book.color} text-white hover:shadow-lg hover:scale-105`
+                  }`}
+                >
+                  <span className="hidden sm:inline">Suivant</span>
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
-            )}
+            </div>
           </div>
-        </aside>
-
-        {/* Main Content - Mobile Responsive */}
-        <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-white">
-          
-          {/* Header - Mobile Responsive */}
-          <header className="bg-white border-b border-gray-200 px-3 md:px-4 lg:px-6 py-3 md:py-4 flex items-center justify-between shadow-sm z-30">
-            <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
-                aria-label="Ouvrir le menu"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              
-              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <span className="px-2 md:px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-md flex-shrink-0">
-                  CH {activeChapter}
-                </span>
-                <div className="w-px h-4 bg-gray-300 flex-shrink-0 hidden sm:block"></div>
-                <h1 className="font-semibold text-xs sm:text-sm lg:text-base text-gray-900 truncate">
-                  {currentChapter.title}
-                </h1>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-0.5 md:gap-1 flex-shrink-0">
-              <button
-                onClick={goToPrevChapter}
-                disabled={isFirstChapter}
-                className={`p-1.5 md:p-2 rounded-lg transition-all ${
-                  isFirstChapter
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-                aria-label="Chapitre précédent"
-              >
-                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
-              </button>
-              <button
-                onClick={goToNextChapter}
-                disabled={isLastChapter}
-                className={`p-1.5 md:p-2 rounded-lg transition-all ${
-                  isLastChapter
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-                aria-label="Chapitre suivant"
-              >
-                <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
-              </button>
-            </div>
-          </header>
-
-          <FreemiumWrapper
-            isLocked={isCurrentLocked}
-            user={user}
-            onShowLogin={onShowLogin}
-            type="chapter"
-          >
-            <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Video Container - Fixed aspect ratio on all devices */}
-              <div className="bg-black w-full flex-shrink-0">
-                <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
-                  <div className="absolute inset-0">
-                    <VideoPlayer
-                      videoUrl={currentChapter.videoUrl}
-                      title={`${currentChapter.title} - Chapitre ${activeChapter}`}
-                      duration={currentChapter.duration}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Content Area - Now scrollable on all devices */}
-              <div className="flex-1 overflow-y-auto bg-gray-50">
-                <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
-                
-                  {/* Chapter Info Card */}
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
-                    <div className="flex items-start gap-3 md:gap-4">
-                      <div className={`w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br ${book.color} rounded-xl flex items-center justify-center text-white text-base md:text-lg font-bold flex-shrink-0 shadow-md`}>
-                        {activeChapter}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-2 leading-tight">
-                          {currentChapter.title}
-                        </h2>
-                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-600">
-                          <div className="flex items-center gap-1 md:gap-1.5">
-                            <Clock className="w-3 h-3 md:w-4 md:h-4" />
-                            <span className="font-medium">{currentChapter.duration}</span>
-                          </div>
-                          <span className="text-gray-300">•</span>
-                          <span>
-                            Chapitre {activeChapter} sur {chapterNumbers.length}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Resume Card - Now visible and scrollable */}
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
-                    <div className="flex items-center gap-2 mb-3 md:mb-4">
-                      <div className="w-7 h-7 md:w-8 md:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600" />
-                      </div>
-                      <h3 className="text-base md:text-lg font-bold text-gray-900">Résumé du chapitre</h3>
-                    </div>
-                    
-                    <div className="prose prose-sm md:prose-gray max-w-none">
-                      <p className="text-sm md:text-base text-gray-700 leading-relaxed text-justify whitespace-pre-line">
-                        {currentChapter.resume || 'Le résumé de ce chapitre sera bientôt disponible.'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Navigation Buttons - Mobile Responsive */}
-                  <div className="flex items-center justify-between gap-3 md:gap-4 pt-4">
-                    <button
-                      onClick={goToPrevChapter}
-                      disabled={isFirstChapter}
-                      className={`px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all flex items-center gap-1.5 md:gap-2 text-sm md:text-base ${
-                        isFirstChapter
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-md'
-                      }`}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      <span className="hidden sm:inline">Précédent</span>
-                    </button>
-
-                    <div className="text-xs md:text-sm text-gray-500 font-medium">
-                      {currentIndex + 1} / {chapterNumbers.length}
-                    </div>
-
-                    <button
-                      onClick={goToNextChapter}
-                      disabled={isLastChapter}
-                      className={`px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all flex items-center gap-1.5 md:gap-2 text-sm md:text-base ${
-                        isLastChapter
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : `bg-gradient-to-r ${book.color} text-white hover:shadow-lg hover:scale-105`
-                      }`}
-                    >
-                      <span className="hidden sm:inline">Suivant</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </FreemiumWrapper>
-        </main>
-      </div>
-
-      {/* Registration Modal */}
-      <RegistrationModal
-        isOpen={showRegistrationModal}
-        onClose={handleCloseRegistration}
-        onRegister={handleRegister}
-      />
-    </>
+        </div>
+      </main>
+    </div>
   );
 };
 
