@@ -568,16 +568,12 @@ const getPageTitle = () => {
                           Rejoignez des centaines d'étudiants qui réussissent leurs examens avec SmartBac
                         </p>
                         <div className="space-y-2">
-                          <div className="flex items-start gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
-                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
+                          <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                             <span><strong>200 DH/an</strong> • Accès illimité à tous les contenus</span>
                           </div>
-                          <div className="flex items-start gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
-                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
-                            <span>Tous les livres et ressources inclus</span>
-                          </div>
-                          <div className="flex items-start gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
-                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
+                          <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                             <span>Accès au groupe WhatsApp de préparation collective</span>
                           </div>
                         </div>
