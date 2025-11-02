@@ -576,6 +576,10 @@ const getPageTitle = () => {
                             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                             <span>Tous les livres et ressources inclus</span>
                           </div>
+                          <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                            <span>Accès au groupe WhatsApp de préparation collective</span>
+                          </div>
                         </div>
                       </div>
                       

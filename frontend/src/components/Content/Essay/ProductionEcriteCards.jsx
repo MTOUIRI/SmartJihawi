@@ -262,7 +262,7 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
   };
 
   const handleEssayGroupClick = (essayGroup, index) => {
-    const locked = isItemLocked(index, user, 2);
+    const locked = isItemLocked(index, user, 3);
     if (locked) {
       if (onShowRegistration) {
         onShowRegistration();
