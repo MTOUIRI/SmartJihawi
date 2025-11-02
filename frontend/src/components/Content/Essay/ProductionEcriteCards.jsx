@@ -122,12 +122,6 @@ const EssayGroupCard = ({ essayGroup, examTitle, examYear, onClick, showArabic, 
           </div>
         </div>
       )}
-
-      {index === 0 && (
-        <div className="absolute top-3 right-3 bg-green-500 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold z-20">
-          GRATUIT
-        </div>
-      )}
       
       <div className="h-2 bg-gradient-to-r from-pink-500 to-rose-600" />
       
@@ -347,7 +341,7 @@ const ProductionEcriteCards = ({ book, onBack, showArabic = false, user, onShowL
                         examYear={essayGroup.examYear}
                         onClick={() => handleEssayGroupClick(essayGroup, index)}
                         showArabic={showArabic}
-                        isLocked={isItemLocked(index, user, 2)}
+                        isLocked={isItemLocked(index, user, 3)}
                         onShowRegistration={onShowRegistration}
                         index={index}
                       />

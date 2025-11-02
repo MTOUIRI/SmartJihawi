@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User, Phone, MapPin, ArrowRight, ArrowLeft, CheckCircle, Send, AlertCircle } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, MapPin, ArrowRight, ArrowLeft, CheckCircle, Send, AlertCircle, MessageCircle } from 'lucide-react';
 import API_URL from '../../config';
 
 const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
@@ -345,6 +345,36 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
         </div>
       </div>
 
+      {/* What You Get Section */}
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-5">
+        <h3 className="text-base font-bold text-green-900 mb-3 flex items-center gap-2">
+          <CheckCircle className="w-5 h-5" />
+          Ce que vous obtenez avec votre abonnement
+        </h3>
+        <ul className="space-y-2.5 text-sm text-green-800">
+          <li className="flex items-start gap-2">
+            <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+            <span>Accès illimité à tous les livres et chapitres</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+            <span>QCM interactifs avec corrections détaillées</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+            <span>Examens officiels avec vidéos explicatives</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+            <span>Production écrite guidée (intro, développement, conclusion)</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <MessageCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+            <span className="font-semibold">Accès au groupe WhatsApp de préparation collective</span>
+          </li>
+        </ul>
+      </div>
+
       <div className="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-lg p-4">
         <input
           type="checkbox"
@@ -426,7 +456,7 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
         
         <p className="text-gray-600 text-sm mb-4">
           Envoyez-nous votre reçu de paiement via WhatsApp. 
-          Votre compte sera activé dans les 24 heures suivant la vérification.
+          Votre compte sera activé dans les 24 heures suivant la vérification, et vous serez ajouté au groupe de préparation.
         </p>
         
         <button
@@ -454,7 +484,7 @@ const RegistrationModal = ({ isOpen, onClose, onRegister }) => {
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-sm text-blue-800">
-          <span className="font-semibold">ℹ️ Important :</span> Vous pourrez vous connecter une fois que nous aurons vérifié votre paiement. Vous recevrez une confirmation par email.
+          <span className="font-semibold">ℹ️ Important :</span> Vous pourrez vous connecter une fois que nous aurons vérifié votre paiement. Vous recevrez une confirmation par email et serez ajouté au groupe WhatsApp.
         </p>
       </div>
     </div>
