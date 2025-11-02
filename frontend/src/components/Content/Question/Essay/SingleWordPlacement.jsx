@@ -349,8 +349,8 @@ const SingleWordPlacement = ({
         )}
       </div>
 
-      {/* Main Template Area with Clickable Slots */}
-      <div className={`bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8 shadow-md ${showArabic ? 'text-right' : 'text-left'}`}>
+     {/* Main Template Area with Clickable Slots - Always Left-Aligned (French text) */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-lg sm:rounded-xl p-4 sm:p-6 md:p-8 shadow-md text-left">
         <div className="text-sm sm:text-base md:text-lg leading-loose sm:leading-relaxed">
           {parts.map((part, index) => {
             if (part.type === 'text') {

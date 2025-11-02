@@ -338,18 +338,24 @@ const QuestionRenderers = ({
     }
     
     return (
-      <>
-        <div className={`text-lg text-gray-700 mb-6 ${showArabic ? 'text-right' : 'text-left'}`}>
-          <p className="mb-2">
-            {showArabic && question.questionArabic ? question.questionArabic : question.question}
-          </p>
-          {showArabic && question.questionArabic && (
-            <p className="text-sm text-gray-500 border-t pt-2 text-left">
+              <>
+                {showArabic && question.questionArabic ? (
+          <div className="text-lg text-gray-700 mb-6 text-right" dir="rtl">
+            <p className="mb-2">
+              {question.questionArabic}
+            </p>
+            <p className="text-sm text-gray-500 border-t pt-2 text-left" dir="ltr">
               {question.question}
             </p>
-          )}
-        </div>
-
+          </div>
+        ) : (
+          <div className="text-lg text-gray-700 mb-6 text-left">
+            <p className="mb-2">
+              {question.question}
+            </p>
+          </div>
+        )}
+        
         {question.type === 'table' && (
           <div>
             <TableQuestion

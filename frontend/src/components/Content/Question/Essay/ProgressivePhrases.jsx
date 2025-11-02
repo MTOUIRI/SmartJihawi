@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Check, CheckCircle, X, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, AlertCircle, HelpCircle, Sparkles, Trophy, Zap, Star, Volume2, VolumeX, Eye, EyeOff, RotateCcw } from 'lucide-react';
 
@@ -42,6 +43,21 @@ const ProgressivePhrases = ({
     return question.progressivePhrases.map(phrase => shuffleArray(phrase.words));
   }, [question.progressivePhrases]);
 
+  // Get current phrase
+  const currentPhrase = question.progressivePhrases[currentPhraseIndex];
+
+  // Shuffle helper words to prevent pattern recognition
+  const shuffledHelperWords = useMemo(() => {
+    if (!currentPhrase.helper?.french) return null;
+    
+    const combined = currentPhrase.helper.french.map((french, index) => ({
+      french,
+      arabic: currentPhrase.helper.arabic?.[index] || ''
+    }));
+    
+    return shuffleArray(combined);
+  }, [currentPhrase]);
+
   // Reset state when question changes
   useEffect(() => {
     setCurrentPhraseIndex(0);
@@ -53,7 +69,7 @@ const ProgressivePhrases = ({
     stopSpeaking();
   }, [question.id]);
 
-const handleWordClick = (word) => {
+  const handleWordClick = (word) => {
     if (verifiedPhrases.has(currentPhraseIndex)) return;
     setSelectedWord(word);
     // Speak the word when selected
@@ -284,7 +300,6 @@ const handleWordClick = (word) => {
     });
   };
 
-  const currentPhrase = question.progressivePhrases[currentPhraseIndex];
   const template = currentPhrase.template;
   const availableWords = getAvailableWords(currentPhraseIndex);
   const isCurrentPhraseVerified = verifiedPhrases.has(currentPhraseIndex);
@@ -463,8 +478,8 @@ const handleWordClick = (word) => {
         </div>
       </div>
 
-      {/* Current Phrase Template - Responsive */}
-      <div className={`bg-gradient-to-br ${getSectionBgColor()} border ${getSectionBorderColor()} rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 shadow-sm ${showArabic ? 'text-right' : 'text-left'}`}>
+      {/* Current Phrase Template - Always Left-Aligned (French text) */}
+      <div className={`bg-gradient-to-br ${getSectionBgColor()} border ${getSectionBorderColor()} rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 shadow-sm text-left`}>
         <div className="text-sm sm:text-base md:text-lg leading-loose sm:leading-relaxed">
           {parts.map((part, index) => {
             if (part.type === 'text') {
@@ -689,47 +704,66 @@ const handleWordClick = (word) => {
         </div>
       )}
 
-      {/* Vocabulary Helper - Responsive */}
-      {currentPhrase.helper && (
-        <div className="border-t-2 border-gray-200 pt-3 sm:pt-4 md:pt-6">
-          <button
-            onClick={() => toggleHelper && toggleHelper(`${question.id}-phrase-${currentPhraseIndex}`)}
-            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg text-sm sm:text-base"
-          >
-            <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="font-semibold">
-              {showArabic ? 'مساعدة المفردات' : 'Aide vocabulaire'}
-            </span>
-            {showHelper && showHelper[`${question.id}-phrase-${currentPhraseIndex}`] ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />}
-          </button>
+{/* Vocabulary Helper - Responsive */}
+{currentPhrase.helper && (
+  <div className="border-t-2 border-gray-200 pt-3 sm:pt-4 md:pt-6">
+    <button
+      onClick={() => toggleHelper && toggleHelper(`${question.id}-phrase-${currentPhraseIndex}`)}
+      className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg text-sm sm:text-base"
+    >
+      <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+      <span className="font-semibold">
+        {showArabic ? 'مساعدة المفردات' : 'Aide vocabulaire'}
+      </span>
+      {showHelper && showHelper[`${question.id}-phrase-${currentPhraseIndex}`] ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />}
+    </button>
+    
+    {showHelper && showHelper[`${question.id}-phrase-${currentPhraseIndex}`] && (() => {
+      // Create array of helper words - ensure we only take as many as exist
+      const frenchWords = currentPhrase.helper.french || [];
+      const arabicWords = currentPhrase.helper.arabic || [];
+      
+      // Only create pairs for the minimum length to avoid undefined values
+      const minLength = Math.min(frenchWords.length, arabicWords.length);
+      const helperWords = [];
+      
+      for (let i = 0; i < minLength; i++) {
+        if (frenchWords[i] && arabicWords[i]) {
+          helperWords.push({
+            french: frenchWords[i],
+            arabic: arabicWords[i]
+          });
+        }
+      }
+      
+      // Shuffle the array
+      const shuffledWords = [...helperWords].sort(() => Math.random() - 0.5);
+      
+      return (
+        <div className="mt-3 sm:mt-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border-2 border-blue-200 shadow-lg animate-fadeIn">
+          <h4 className={`font-bold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base md:text-lg ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+            {showArabic ? 'مفردات مفيدة' : 'Vocabulaire utile'}
+          </h4>
           
-          {showHelper && showHelper[`${question.id}-phrase-${currentPhraseIndex}`] && (
-            <div className="mt-3 sm:mt-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border-2 border-blue-200 shadow-lg animate-fadeIn">
-              <h4 className={`font-bold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base md:text-lg ${showArabic ? 'text-right flex-row-reverse' : 'text-left'}`}>
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
-                {showArabic ? 'مفردات مفيدة' : 'Vocabulaire utile'}
-              </h4>
-              
-              <div className="space-y-2 sm:space-y-3">
-                {currentPhrase.helper.french && currentPhrase.helper.french.map((frenchWord, idx) => {
-                  const arabicWord = currentPhrase.helper.arabic?.[idx] || '';
-                  return (
-                    <div key={idx} className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-all hover:shadow-md ${showArabic ? 'flex-row-reverse' : ''}`}>
-                      <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0">
-                        <span className="block truncate">{frenchWord}</span>
-                      </span>
-                      <span className="text-blue-600 font-bold text-sm sm:text-base md:text-lg flex-shrink-0">↔</span>
-                      <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0" dir="rtl">
-                        <span className="block truncate">{arabicWord}</span>
-                      </span>
-                    </div>
-                  );
-                })}
+          <div className="space-y-2 sm:space-y-3">
+            {shuffledWords.map((item, idx) => (
+              <div key={idx} className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-all hover:shadow-md ${showArabic ? 'flex-row-reverse' : ''}`}>
+                <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0">
+                  <span className="block truncate">{item.french}</span>
+                </span>
+                <span className="text-blue-600 font-bold text-sm sm:text-base md:text-lg flex-shrink-0">↔</span>
+                <span className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs sm:text-sm font-semibold text-center shadow-sm flex-1 min-w-0" dir="rtl">
+                  <span className="block truncate">{item.arabic}</span>
+                </span>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
-      )}
+      );
+    })()}
+  </div>
+)}
 
       {/* CSS for animations */}
       <style jsx>{`
