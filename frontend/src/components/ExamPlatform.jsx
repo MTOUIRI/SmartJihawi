@@ -602,7 +602,7 @@ const getPageTitle = () => {
                 <footer className="pt-6 sm:pt-8 border-t border-gray-200">
                   <div className="text-center text-gray-600">
                     <p className="text-xs sm:text-sm mb-2">
-                      © 2025 SmartJihawi. Tous droits réservés.
+                      © 2025 SmartBac. Tous droits réservés.
                     </p>
                     <p className="text-xs text-gray-500">
                       Plateforme d'apprentissage pour la littérature française • 1ère Bac
