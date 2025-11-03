@@ -68,15 +68,16 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
     networks:
       - examens-network
 
-volumes:
-  mysql_data:
-    driver: local
-
 networks:
   examens-network:
     driver: bridge
+
+volumes:
+  mysql_data:
