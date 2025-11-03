@@ -7,6 +7,8 @@ import com.examens.backend.entity.Chapter;
 import com.examens.backend.repository.ChapterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +18,8 @@ public class ChapterService {
     @Autowired
     private ChapterRepository chapterRepository;
     
+    // ✅ CACHED: Chapters by book
+    @Cacheable(value = "chapters", key = "'book-' + #bookId")
     public List<ChapterResponse> getAllChaptersByBook(String bookId) {
         return chapterRepository.findByBookIdOrderByChapterNumber(bookId)
                 .stream()
@@ -23,6 +27,16 @@ public class ChapterService {
                 .collect(Collectors.toList());
     }
     
+    // ✅ CACHED: Single chapter by ID
+    @Cacheable(value = "chapters", key = "#chapterId")
+    public ChapterResponse getChapterById(Long chapterId) throws Exception {
+        Chapter chapter = chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new Exception("Chapitre non trouvé"));
+        return convertToResponse(chapter);
+    }
+    
+    // ⚠️ CACHE EVICTION: Clear chapters and qcm caches when creating
+    @CacheEvict(value = {"chapters", "qcm"}, allEntries = true)
     public ChapterResponse createChapter(ChapterCreateRequest request) throws Exception {
         // Check if chapter number already exists for this book
         if (chapterRepository.existsByBookIdAndChapterNumber(request.getBookId(), request.getChapterNumber())) {
@@ -41,6 +55,8 @@ public class ChapterService {
         return convertToResponse(savedChapter);
     }
     
+    // ⚠️ CACHE EVICTION: Clear chapters and qcm caches when updating
+    @CacheEvict(value = {"chapters", "qcm"}, allEntries = true)
     public ChapterResponse updateChapter(Long chapterId, ChapterUpdateRequest request) throws Exception {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new Exception("Chapitre non trouvé"));
@@ -54,17 +70,13 @@ public class ChapterService {
         return convertToResponse(updatedChapter);
     }
     
+    // ⚠️ CACHE EVICTION: Clear chapters and qcm caches when deleting
+    @CacheEvict(value = {"chapters", "qcm"}, allEntries = true)
     public void deleteChapter(Long chapterId) throws Exception {
         if (!chapterRepository.existsById(chapterId)) {
             throw new Exception("Chapitre non trouvé");
         }
         chapterRepository.deleteById(chapterId);
-    }
-    
-    public ChapterResponse getChapterById(Long chapterId) throws Exception {
-        Chapter chapter = chapterRepository.findById(chapterId)
-                .orElseThrow(() -> new Exception("Chapitre non trouvé"));
-        return convertToResponse(chapter);
     }
     
     private ChapterResponse convertToResponse(Chapter chapter) {

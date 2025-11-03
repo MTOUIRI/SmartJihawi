@@ -8,7 +8,7 @@ services:
       MYSQL_DATABASE: exams_db
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./exams_db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro  # Changed filename
+      - ./exams_db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     ports:
       - "3306:3306"
     networks:
@@ -29,16 +29,35 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/exams_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      # Database Configuration
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/exams_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: CPhqn2UH.root
+      
+      # JPA Configuration
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_SHOW_SQL: "false"
+      
+      # Production Logging (Optimized for Performance)
+      LOGGING_LEVEL: WARN
+      SQL_LOGGING_LEVEL: WARN
+      
+      # Optional: Set active profile
+      SPRING_PROFILES_ACTIVE: prod
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - examens-network
+    # Optional: Resource limits for better performance
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   frontend:
     build:

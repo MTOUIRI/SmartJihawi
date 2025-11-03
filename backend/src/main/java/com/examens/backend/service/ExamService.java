@@ -21,6 +21,8 @@ import com.examens.backend.repository.EssayQuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -51,13 +53,17 @@ public class ExamService {
         "boite-merveilles", "La Boîte à Merveilles"
     );
 
+    // ✅ CACHED: All exams
+    @Cacheable(value = "exams", key = "'all'")
     public List<ExamResponse> getAllExams() {
-    List<Exam> exams = examRepository.findAll();
-    return exams.stream()
-        .map(this::convertToResponse)
-        .collect(Collectors.toList());
-}
+        List<Exam> exams = examRepository.findAll();
+        return exams.stream()
+            .map(this::convertToResponse)
+            .collect(Collectors.toList());
+    }
     
+    // ✅ CACHED: Exams by book
+    @Cacheable(value = "exams", key = "'book-' + #bookId")
     public List<ExamResponse> getAllExamsByBook(String bookId) {
         List<Exam> exams = examRepository.findByBookIdWithTextExtract(bookId);
         return exams.stream()
@@ -65,13 +71,16 @@ public class ExamService {
                 .collect(Collectors.toList());
     }
     
+    // ✅ CACHED: Single exam by ID
+    @Cacheable(value = "exams", key = "#examId")
     public ExamResponse getExamById(Long examId) {
         Exam exam = examRepository.findByIdWithTextExtract(examId)
                 .orElseThrow(() -> new RuntimeException("Examen non trouvé avec l'ID: " + examId));
         return convertToResponse(exam);
     }
     
-    // New method to get complete exam with questions and essay questions
+    // ✅ CACHED: Complete exam with questions
+    @Cacheable(value = "exams", key = "'complete-' + #examId")
     public ExamWithQuestionsResponse getCompleteExamById(Long examId) {
         Exam exam = examRepository.findByIdWithTextExtract(examId)
                 .orElseThrow(() -> new RuntimeException("Examen non trouvé avec l'ID: " + examId));
@@ -101,6 +110,8 @@ public class ExamService {
         return response;
     }
     
+    // ⚠️ CACHE EVICTION: Clear all exam caches when creating
+    @CacheEvict(value = "exams", allEntries = true)
     @Transactional
     public ExamResponse createExam(ExamCreateRequest request) {
         // Check for duplicate
@@ -130,6 +141,8 @@ public class ExamService {
         return convertToResponse(exam);
     }
     
+    // ⚠️ CACHE EVICTION: Clear all exam caches when updating
+    @CacheEvict(value = "exams", allEntries = true)
     @Transactional
     public ExamResponse updateExam(Long examId, ExamUpdateRequest request) {
         Exam exam = examRepository.findByIdWithTextExtract(examId)
@@ -157,6 +170,8 @@ public class ExamService {
         return convertToResponse(exam);
     }
     
+    // ⚠️ CACHE EVICTION: Clear all exam caches when deleting
+    @CacheEvict(value = "exams", allEntries = true)
     @Transactional
     public void deleteExam(Long examId) {
         Exam exam = examRepository.findById(examId)
@@ -166,7 +181,8 @@ public class ExamService {
         examRepository.delete(exam);
     }
     
-    // New method to get exam statistics (including both question types)
+    // ✅ CACHED: Exam statistics
+    @Cacheable(value = "exams", key = "'stats-' + #examId")
     public ExamStatisticsResponse getExamStatistics(Long examId) {
         if (!examRepository.existsById(examId)) {
             throw new RuntimeException("Examen non trouvé avec l'ID: " + examId);
@@ -193,129 +209,131 @@ public class ExamService {
         
         ExamStatisticsResponse stats = new ExamStatisticsResponse();
         stats.setExamId(examId);
-        stats.setTotalPoints((regularPoints != null ? regularPoints : 0) + (essayPoints != null ? essayPoints : 0));
+        stats.setTotalQuestions(totalQuestions + totalEssayQuestions);
         stats.setTotalPoints((regularPoints != null ? regularPoints : 0) + (essayPoints != null ? essayPoints : 0));
         stats.setQuestionsByType(questionsByType);
         
         return stats;
     }
     
+    // ... rest of your private methods remain unchanged ...
+    
     private TextExtract createTextExtract(Exam exam, TextExtractRequest request) {
-    System.out.println("========================================");
-    System.out.println("🔵 CREATE TEXT EXTRACT");
-    System.out.println("========================================");
-    System.out.println("Exam ID: " + exam.getId());
-    System.out.println("Has sourceChapter: " + (request.getSourceChapter() != null));
-    
-    TextExtract textExtract = new TextExtract();
-    textExtract.setExam(exam);
-    textExtract.setContent(request.getContent());
-    
-    if (request.getSourceChapter() != null) {
-        SourceChapterRequest sc = request.getSourceChapter();
-        System.out.println("SourceChapter Data Received:");
-        System.out.println("  - id: " + sc.getId());
-        System.out.println("  - chapterId: " + sc.getChapterId());
-        System.out.println("  - effectiveChapterId: " + sc.getEffectiveChapterId());
-        System.out.println("  - chapterTitle: " + sc.getChapterTitle());
-        System.out.println("  - bookId: " + sc.getBookId());
+        System.out.println("========================================");
+        System.out.println("🔵 CREATE TEXT EXTRACT");
+        System.out.println("========================================");
+        System.out.println("Exam ID: " + exam.getId());
+        System.out.println("Has sourceChapter: " + (request.getSourceChapter() != null));
         
-        setSourceChapterData(textExtract, request.getSourceChapter());
+        TextExtract textExtract = new TextExtract();
+        textExtract.setExam(exam);
+        textExtract.setContent(request.getContent());
         
-        System.out.println("After setSourceChapterData:");
-        System.out.println("  - textExtract.chapterTitle: " + textExtract.getChapterTitle());
-        System.out.println("  - textExtract.bookId: " + textExtract.getBookId());
-        System.out.println("  - textExtract.chapterNumber: " + textExtract.getChapterNumber());
-    }
-    
-    TextExtract saved = textExtractRepository.save(textExtract);
-    
-    System.out.println("========================================");
-    System.out.println("✅ SAVED TO DATABASE");
-    System.out.println("========================================");
-    System.out.println("TextExtract ID: " + saved.getId());
-    System.out.println("Chapter Title: " + saved.getChapterTitle());
-    System.out.println("Book ID: " + saved.getBookId());
-    System.out.println("Chapter Number: " + saved.getChapterNumber());
-    System.out.println("========================================");
-    
-    return saved;
-}
-
-private void updateTextExtract(TextExtract textExtract, TextExtractRequest request) {
-    System.out.println("========================================");
-    System.out.println("🟡 UPDATE TEXT EXTRACT");
-    System.out.println("========================================");
-    System.out.println("TextExtract ID: " + textExtract.getId());
-    
-    textExtract.setContent(request.getContent());
-    clearSourceChapterData(textExtract);
-    
-    if (request.getSourceChapter() != null) {
-        setSourceChapterData(textExtract, request.getSourceChapter());
-    }
-    
-    TextExtract saved = textExtractRepository.save(textExtract);
-    System.out.println("✅ Updated - Chapter Title: " + saved.getChapterTitle());
-    System.out.println("========================================");
-}
-
-private void setSourceChapterData(TextExtract textExtract, SourceChapterRequest sourceChapter) {
-    System.out.println(">>> setSourceChapterData START");
-    
-    // CRITICAL: Use getEffectiveChapterId() to handle both 'id' and 'chapterId'
-    Long chapterId = sourceChapter.getEffectiveChapterId();
-    System.out.println("  Effective Chapter ID: " + chapterId);
-    
-    if (chapterId != null) {
-        System.out.println("  📚 Fetching chapter from DB with ID: " + chapterId);
-        
-        Chapter chapter = chapterRepository.findById(chapterId)
-                .orElseThrow(() -> new RuntimeException("Chapitre non trouvé avec l'ID: " + chapterId));
-        
-        System.out.println("  ✅ Found Chapter:");
-        System.out.println("     - ID: " + chapter.getId());
-        System.out.println("     - Title: " + chapter.getTitle());
-        System.out.println("     - Number: " + chapter.getChapterNumber());
-        System.out.println("     - BookId: " + chapter.getBookId());
-        System.out.println("     - VideoUrl: " + chapter.getVideoUrl());
-        
-        // NOW SET ALL THE FIELDS
-        textExtract.setChapterRef(chapter);
-        textExtract.setSourceChapterId(chapter.getId());
-        textExtract.setChapterNumber(chapter.getChapterNumber());
-        textExtract.setChapterTitle(chapter.getTitle());  // THIS LINE IS CRITICAL!
-        textExtract.setChapterTitleArabic(null);
-        textExtract.setVideoUrl(chapter.getVideoUrl());
-        textExtract.setBookId(chapter.getBookId());       // THIS LINE IS CRITICAL!
-        
-        System.out.println("  ✅ SET IN TEXT EXTRACT:");
-        System.out.println("     - chapterTitle: " + textExtract.getChapterTitle());
-        System.out.println("     - bookId: " + textExtract.getBookId());
-        
-    } else if (sourceChapter.getChapterNumber() != null || sourceChapter.getChapterTitle() != null) {
-        System.out.println("  📝 Using direct data from request");
-        
-        textExtract.setChapterNumber(sourceChapter.getChapterNumber());
-        textExtract.setChapterTitle(sourceChapter.getChapterTitle());
-        textExtract.setChapterTitleArabic(sourceChapter.getChapterTitleArabic());
-        textExtract.setVideoUrl(sourceChapter.getVideoUrl());
-        
-        if (sourceChapter.getBookId() != null) {
-            textExtract.setBookId(sourceChapter.getBookId());
-        } else if (textExtract.getExam() != null) {
-            textExtract.setBookId(textExtract.getExam().getBookId());
+        if (request.getSourceChapter() != null) {
+            SourceChapterRequest sc = request.getSourceChapter();
+            System.out.println("SourceChapter Data Received:");
+            System.out.println("  - id: " + sc.getId());
+            System.out.println("  - chapterId: " + sc.getChapterId());
+            System.out.println("  - effectiveChapterId: " + sc.getEffectiveChapterId());
+            System.out.println("  - chapterTitle: " + sc.getChapterTitle());
+            System.out.println("  - bookId: " + sc.getBookId());
+            
+            setSourceChapterData(textExtract, request.getSourceChapter());
+            
+            System.out.println("After setSourceChapterData:");
+            System.out.println("  - textExtract.chapterTitle: " + textExtract.getChapterTitle());
+            System.out.println("  - textExtract.bookId: " + textExtract.getBookId());
+            System.out.println("  - textExtract.chapterNumber: " + textExtract.getChapterNumber());
         }
+        
+        TextExtract saved = textExtractRepository.save(textExtract);
+        
+        System.out.println("========================================");
+        System.out.println("✅ SAVED TO DATABASE");
+        System.out.println("========================================");
+        System.out.println("TextExtract ID: " + saved.getId());
+        System.out.println("Chapter Title: " + saved.getChapterTitle());
+        System.out.println("Book ID: " + saved.getBookId());
+        System.out.println("Chapter Number: " + saved.getChapterNumber());
+        System.out.println("========================================");
+        
+        return saved;
     }
-    
-    // Set timestamps
-    textExtract.setTimeStart(sourceChapter.getTimeStart());
-    textExtract.setTimeEnd(sourceChapter.getTimeEnd());
-    
-    System.out.println("  TimeStart: " + textExtract.getTimeStart());
-    System.out.println("  TimeEnd: " + textExtract.getTimeEnd());
-    System.out.println(">>> setSourceChapterData END");
-}
+
+    private void updateTextExtract(TextExtract textExtract, TextExtractRequest request) {
+        System.out.println("========================================");
+        System.out.println("🟡 UPDATE TEXT EXTRACT");
+        System.out.println("========================================");
+        System.out.println("TextExtract ID: " + textExtract.getId());
+        
+        textExtract.setContent(request.getContent());
+        clearSourceChapterData(textExtract);
+        
+        if (request.getSourceChapter() != null) {
+            setSourceChapterData(textExtract, request.getSourceChapter());
+        }
+        
+        TextExtract saved = textExtractRepository.save(textExtract);
+        System.out.println("✅ Updated - Chapter Title: " + saved.getChapterTitle());
+        System.out.println("========================================");
+    }
+
+    private void setSourceChapterData(TextExtract textExtract, SourceChapterRequest sourceChapter) {
+        System.out.println(">>> setSourceChapterData START");
+        
+        // CRITICAL: Use getEffectiveChapterId() to handle both 'id' and 'chapterId'
+        Long chapterId = sourceChapter.getEffectiveChapterId();
+        System.out.println("  Effective Chapter ID: " + chapterId);
+        
+        if (chapterId != null) {
+            System.out.println("  📚 Fetching chapter from DB with ID: " + chapterId);
+            
+            Chapter chapter = chapterRepository.findById(chapterId)
+                    .orElseThrow(() -> new RuntimeException("Chapitre non trouvé avec l'ID: " + chapterId));
+            
+            System.out.println("  ✅ Found Chapter:");
+            System.out.println("     - ID: " + chapter.getId());
+            System.out.println("     - Title: " + chapter.getTitle());
+            System.out.println("     - Number: " + chapter.getChapterNumber());
+            System.out.println("     - BookId: " + chapter.getBookId());
+            System.out.println("     - VideoUrl: " + chapter.getVideoUrl());
+            
+            // NOW SET ALL THE FIELDS
+            textExtract.setChapterRef(chapter);
+            textExtract.setSourceChapterId(chapter.getId());
+            textExtract.setChapterNumber(chapter.getChapterNumber());
+            textExtract.setChapterTitle(chapter.getTitle());
+            textExtract.setChapterTitleArabic(null);
+            textExtract.setVideoUrl(chapter.getVideoUrl());
+            textExtract.setBookId(chapter.getBookId());
+            
+            System.out.println("  ✅ SET IN TEXT EXTRACT:");
+            System.out.println("     - chapterTitle: " + textExtract.getChapterTitle());
+            System.out.println("     - bookId: " + textExtract.getBookId());
+            
+        } else if (sourceChapter.getChapterNumber() != null || sourceChapter.getChapterTitle() != null) {
+            System.out.println("  📝 Using direct data from request");
+            
+            textExtract.setChapterNumber(sourceChapter.getChapterNumber());
+            textExtract.setChapterTitle(sourceChapter.getChapterTitle());
+            textExtract.setChapterTitleArabic(sourceChapter.getChapterTitleArabic());
+            textExtract.setVideoUrl(sourceChapter.getVideoUrl());
+            
+            if (sourceChapter.getBookId() != null) {
+                textExtract.setBookId(sourceChapter.getBookId());
+            } else if (textExtract.getExam() != null) {
+                textExtract.setBookId(textExtract.getExam().getBookId());
+            }
+        }
+        
+        // Set timestamps
+        textExtract.setTimeStart(sourceChapter.getTimeStart());
+        textExtract.setTimeEnd(sourceChapter.getTimeEnd());
+        
+        System.out.println("  TimeStart: " + textExtract.getTimeStart());
+        System.out.println("  TimeEnd: " + textExtract.getTimeEnd());
+        System.out.println(">>> setSourceChapterData END");
+    }
     
     private void clearSourceChapterData(TextExtract textExtract) {
         textExtract.setChapterRef(null);
@@ -371,24 +389,24 @@ private void setSourceChapterData(TextExtract textExtract, SourceChapterRequest 
     }
     
     private SourceChapterResponse convertSourceChapterToResponse(TextExtract textExtract) {
-    SourceChapterResponse response = new SourceChapterResponse();
-    response.setChapterId(textExtract.getSourceChapterId());
-    response.setChapterNumber(textExtract.getChapterNumber());
-    response.setChapterTitle(textExtract.getChapterTitle());
-    response.setChapterTitleArabic(textExtract.getChapterTitleArabic());
-    response.setVideoUrl(textExtract.getVideoUrl());
-    response.setTimeStart(textExtract.getTimeStart());
-    response.setTimeEnd(textExtract.getTimeEnd());
-    
-    // Get bookId from text extract or fall back to exam's bookId
-    String bookId = textExtract.getBookId();
-    if (bookId == null && textExtract.getExam() != null) {
-        bookId = textExtract.getExam().getBookId();
+        SourceChapterResponse response = new SourceChapterResponse();
+        response.setChapterId(textExtract.getSourceChapterId());
+        response.setChapterNumber(textExtract.getChapterNumber());
+        response.setChapterTitle(textExtract.getChapterTitle());
+        response.setChapterTitleArabic(textExtract.getChapterTitleArabic());
+        response.setVideoUrl(textExtract.getVideoUrl());
+        response.setTimeStart(textExtract.getTimeStart());
+        response.setTimeEnd(textExtract.getTimeEnd());
+        
+        // Get bookId from text extract or fall back to exam's bookId
+        String bookId = textExtract.getBookId();
+        if (bookId == null && textExtract.getExam() != null) {
+            bookId = textExtract.getExam().getBookId();
+        }
+        response.setBookTitle(BOOK_TITLES.get(bookId));
+        
+        return response;
     }
-    response.setBookTitle(BOOK_TITLES.get(bookId));
-    
-    return response;
-}
     
     // Convert regular Question to QuestionResponse
     private QuestionResponse convertQuestionToResponse(Question question) {
@@ -428,8 +446,6 @@ private void setSourceChapterData(TextExtract textExtract, SourceChapterRequest 
         response.setHelper(essayQuestion.getHelper());
         response.setAnswer(essayQuestion.getAnswer());
         response.setAnswerArabic(essayQuestion.getAnswerArabic());
-        // Essay-specific fields (these need to exist in QuestionResponse for backwards compatibility)
-        // If QuestionResponse doesn't have these fields, you may need to add them or create a separate method
         response.setCreatedAt(essayQuestion.getCreatedAt());
         response.setUpdatedAt(essayQuestion.getUpdatedAt());
         return response;
@@ -452,7 +468,7 @@ class ExamWithQuestionsResponse {
 @lombok.AllArgsConstructor  
 class ExamStatisticsResponse {
     private Long examId;
-    private Integer totalQuestions;
+    private Long totalQuestions;
     private Integer totalPoints;
     private Map<String, Long> questionsByType;
 }
