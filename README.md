@@ -150,9 +150,8 @@ This is a production application. For bug reports or feature requests, please op
 ## 👨‍💻 Author
 
 **Mouad Touiri**
-- LinkedIn: [your-linkedin-url]
+- LinkedIn: linkedin.com/in/mouad-touiri-10b064247/
 - Email: mouad.touiri@gmail.com
-- Portfolio: [your-portfolio-url]
 
 ## 📝 License
 
