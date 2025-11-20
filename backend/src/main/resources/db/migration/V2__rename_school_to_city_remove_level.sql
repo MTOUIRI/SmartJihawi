@@ -1,2 +1,0 @@
-ALTER TABLE users CHANGE COLUMN school city VARCHAR(255);
-ALTER TABLE users DROP COLUMN level;
