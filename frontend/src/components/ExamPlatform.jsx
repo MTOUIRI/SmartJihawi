@@ -570,7 +570,7 @@ const getPageTitle = () => {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
                             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                            <span>• Accès illimité à tous les contenus</span>
+                            <span>Accès illimité à tous les contenus</span>
                           </div>
                           <div className="flex items-center gap-2 sm:gap-3 text-blue-100 text-sm sm:text-base justify-center md:justify-start">
                             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
