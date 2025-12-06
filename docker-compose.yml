@@ -4,7 +4,7 @@ services:
     container_name: examens-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: CPhqn2UH.root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: exams_db
     volumes:
       - mysql_data:/var/lib/mysql
@@ -14,7 +14,7 @@ services:
     networks:
       - examens-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pCPhqn2UH.root"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -32,7 +32,7 @@ services:
       # Database Configuration
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/exams_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: CPhqn2UH.root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       
       # JPA Configuration
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
@@ -41,6 +41,13 @@ services:
       # Production Logging (Optimized for Performance)
       LOGGING_LEVEL_ROOT: WARN
       LOGGING_LEVEL_ORG_HIBERNATE_SQL: WARN
+      
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET}
+      
+      # Email Configuration (if needed)
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
       
       # Optional: Set active profile
       SPRING_PROFILES_ACTIVE: prod
